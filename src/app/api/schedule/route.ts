@@ -1,7 +1,17 @@
 import { NextRequest, NextResponse } from "next/server"
-import { HAS_DB, sql } from "@/lib/db"
+import { HAS_DB, sql, ensureTables } from "@/lib/db"
+
+let tablesEnsured = false
+
+async function ensure() {
+  if (!tablesEnsured) {
+    await ensureTables()
+    tablesEnsured = true
+  }
+}
 
 export async function GET(req: NextRequest) {
+  await ensure()
   const date = req.nextUrl.searchParams.get("date")
   if (!HAS_DB) return NextResponse.json(null)
   if (date) {
@@ -13,6 +23,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  await ensure()
   if (!HAS_DB) return NextResponse.json({ error: "no database" }, { status: 503 })
   const { date, content } = await req.json()
   if (!date) return NextResponse.json({ error: "date required" }, { status: 400 })
@@ -25,6 +36,7 @@ export async function POST(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
+  await ensure()
   if (!HAS_DB) return NextResponse.json({ error: "no database" }, { status: 503 })
   const { date } = await req.json()
   if (!date) return NextResponse.json({ error: "date required" }, { status: 400 })
