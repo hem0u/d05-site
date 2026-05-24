@@ -1,6 +1,5 @@
 import type { Metadata } from "next"
 import { BlogList } from "@/components/blog-list"
-import { BlogActions } from "@/components/blog-actions"
 import { getBlogPosts } from "@/lib/blog-db"
 import { ArkDiamond, HexGrid, Sparkles, CornerDeco, SakuraFlower, YuriBloom } from "@/components/decorations"
 
@@ -54,8 +53,6 @@ export default async function BlogPage() {
             </p>
           </div>
         </div>
-
-        <BlogActions />
 
         {posts.length === 0 ? (
           <div className="text-center py-20">
