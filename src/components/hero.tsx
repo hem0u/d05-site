@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useMemo } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { ArrowDown, Github, Mail } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -101,20 +101,31 @@ function TypewriterText({ text }: { text: string }) {
   )
 }
 
+function calcDays(siteStart: string | undefined): number {
+  const start = new Date(siteStart || "2024-06-01")
+  const startDay = Date.UTC(start.getUTCFullYear(), start.getUTCMonth(), start.getUTCDate())
+  const now = new Date()
+  const nowDay = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())
+  return Math.floor((nowDay - startDay) / 86400000) + 1
+}
+
 export function Hero() {
-  const stats = useMemo(() => {
-    const start = new Date(profile.siteStart || "2024-06-01").getTime()
-    return [
-      { label: "Days Running", value: Math.floor((Date.now() - start) / 86400000) },
-      { label: "Blog Posts", value: blogPosts.length },
-      { label: "Projects", value: projects.length },
-    ]
+  const [daysRunning, setDaysRunning] = useState(() => calcDays(profile.siteStart))
+
+  useEffect(() => {
+    const update = () => setDaysRunning(calcDays(profile.siteStart))
+    update()
+    const interval = setInterval(update, 60000)
+    return () => clearInterval(interval)
   }, [])
 
-  const latestPost = useMemo(() => {
-    const sorted = [...blogPosts].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-    return sorted[0]
-  }, [])
+  const stats = [
+    { label: "Days Running", value: daysRunning },
+    { label: "Blog Posts", value: blogPosts.length },
+    { label: "Projects", value: projects.length },
+  ]
+
+  const latestPost = [...blogPosts].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0]
 
   return (
     <section id="hero" className="relative min-h-[calc(100vh-3.5rem)] flex flex-col items-center justify-center px-4 text-center overflow-hidden vignette snap-start">

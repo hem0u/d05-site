@@ -16,9 +16,11 @@ const QUOTES = [
 
 function calcDays(siteStart: string | undefined): number {
   if (!siteStart) return 1
-  const start = Date.parse(siteStart)
-  if (isNaN(start)) return 1
-  return Math.max(1, Math.floor((Date.now() - start) / 86400000) + 1)
+  const start = new Date(siteStart)
+  const startDay = Date.UTC(start.getUTCFullYear(), start.getUTCMonth(), start.getUTCDate())
+  const now = new Date()
+  const nowDay = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())
+  return Math.floor((nowDay - startDay) / 86400000) + 1
 }
 
 export function Footer() {
