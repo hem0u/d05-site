@@ -15,17 +15,15 @@ const QUOTES = [
 ]
 
 function calcDays(siteStart: string | undefined): number {
-  if (!siteStart) return 0
-  const start = new Date(siteStart)
-  const startDay = Date.UTC(start.getUTCFullYear(), start.getUTCMonth(), start.getUTCDate())
-  const now = new Date()
-  const nowDay = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())
-  return Math.floor((nowDay - startDay) / 86400000) + 1
+  if (!siteStart) return 1
+  const start = Date.parse(siteStart)
+  if (isNaN(start)) return 1
+  return Math.max(1, Math.floor((Date.now() - start) / 86400000) + 1)
 }
 
 export function Footer() {
   const quote = QUOTES[Math.floor(Math.random() * QUOTES.length)]
-  const [daysOnline, setDaysOnline] = useState(() => profile.siteStart ? calcDays(profile.siteStart) : 0)
+  const [daysOnline, setDaysOnline] = useState(() => calcDays(profile.siteStart))
 
   useEffect(() => {
     if (!profile.siteStart) return
@@ -97,11 +95,9 @@ export function Footer() {
           </Link>
         </div>
 
-        {daysOnline > 0 && (
-          <p className="text-[10px] text-muted-foreground/30 tracking-wider">
-            D05的岛屿已存在 {daysOnline} 天
-          </p>
-        )}
+        <p className="text-[10px] text-muted-foreground/30 tracking-wider">
+          D05的岛屿已存在 {daysOnline} 天
+        </p>
         <p className="text-[10px] text-muted-foreground/40 tracking-wider">
           &copy; {new Date().getFullYear()} D05 — Built with Next.js
         </p>
