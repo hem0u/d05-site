@@ -169,24 +169,23 @@ export function CalendarSchedule() {
       </div>
 
       {/* Calendar grid */}
-      <div className="grid grid-cols-7 border-t border-l border-border/10 rounded-xl overflow-hidden">
+      <div className="grid grid-cols-7 border-t border-l border-border/10 rounded-xl">
         {cells.map((day, i) => {
           const key = day ? dateKey(year, month, day) : ""
           const hasPlan = day ? plans.has(key) : false
           const isToday = day && key === todayKey()
           const isSelected = selected === key
           const past = day ? isPast(key) : false
-          const clickable = day && !past
+          const canClick = day && !past
+          const canHover = day && past && hasPlan
 
-          return (
-            <button
-              key={i}
-              disabled={!clickable}
-              onClick={() => day && open(key)}
-              onMouseEnter={() => past && hasPlan && setHovered(key)}
+          const cell = (
+            <div
+              onClick={() => day && canClick && open(key)}
+              onMouseEnter={() => canHover && setHovered(key)}
               onMouseLeave={() => setHovered(null)}
               className={`aspect-square border-r border-b border-border/10 flex items-center justify-center transition-all relative
-                ${!clickable && !(past && hasPlan) ? "bg-muted/10 cursor-default text-muted-foreground/20" : clickable ? "hover:bg-muted/20 cursor-pointer" : "hover:bg-muted/20 cursor-default"}
+                ${!canClick && !canHover ? "bg-muted/10 text-muted-foreground/20" : canClick ? "hover:bg-muted/20 cursor-pointer" : "hover:bg-muted/20 cursor-default"}
                 ${isSelected ? "bg-[hsl(var(--ark-amber)/0.08)] ring-1 ring-[hsl(var(--ark-amber))]" : ""}
               `}
             >
@@ -202,15 +201,16 @@ export function CalendarSchedule() {
 
               {/* Hover tooltip for past days with plans */}
               {hovered === key && hasPlan && past && (
-                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 z-20 pointer-events-none">
+                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 z-30 pointer-events-none">
                   <div className="bg-card border border-border/30 rounded-lg shadow-xl shadow-black/20 p-2.5 w-44 text-left">
                     <p className="text-[10px] text-muted-foreground/40 mb-0.5">{key}</p>
                     <p className="text-xs text-foreground/80 leading-relaxed whitespace-pre-wrap line-clamp-4">{plans.get(key)}</p>
                   </div>
                 </div>
               )}
-            </button>
+            </div>
           )
+          return cell
         })}
       </div>
 
