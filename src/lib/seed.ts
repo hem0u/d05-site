@@ -1,5 +1,6 @@
 import { sql } from "@vercel/postgres"
 import { ensureTables } from "@/lib/db"
+import { toPgArray } from "@/lib/utils"
 import { blogPosts } from "@/data/blog-posts"
 import { friends } from "@/data/friends"
 import { hobbies } from "@/data/hobbies"
@@ -12,7 +13,7 @@ export async function seed() {
   for (const post of blogPosts) {
     await sql`
       INSERT INTO blog_posts (slug, title, excerpt, date, tags, content)
-      VALUES (${post.slug}, ${post.title}, ${post.excerpt}, ${post.date}, ${post.tags}, ${post.content})
+      VALUES (${post.slug}, ${post.title}, ${post.excerpt}, ${post.date}, ${toPgArray(post.tags)}, ${post.content})
       ON CONFLICT (slug) DO NOTHING
     `
   }
