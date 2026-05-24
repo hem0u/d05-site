@@ -57,4 +57,11 @@ export async function ensureTables() {
       image TEXT NOT NULL DEFAULT ''
     )
   `
+
+  await sql`
+    CREATE TABLE IF NOT EXISTS schedules (
+      date TEXT PRIMARY KEY,
+      content TEXT NOT NULL DEFAULT ''
+    )
+  `
 }
