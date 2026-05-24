@@ -119,10 +119,19 @@ export function BlogList({ posts: blogPosts }: { posts: BlogPost[] }) {
       {/* Results */}
       {filtered.length === 0 ? (
         <div className="text-center py-20">
-          <p className="text-5xl mb-3 opacity-30">&#128269;</p>
-          <p className="text-muted-foreground/40 text-sm">
-            {query ? `没有找到包含 "${query}" 的文章` : "该标签下还没有文章"}
-          </p>
+          {blogPosts.length === 0 ? (
+            <>
+              <p className="text-6xl mb-4">&#127800;</p>
+              <p className="text-muted-foreground text-lg">还没有文章，点击上方按钮开始写作</p>
+            </>
+          ) : (
+            <>
+              <p className="text-5xl mb-3 opacity-30">&#128269;</p>
+              <p className="text-muted-foreground/40 text-sm">
+                {query ? `没有找到包含 "${query}" 的文章` : "该标签下还没有文章"}
+              </p>
+            </>
+          )}
         </div>
       ) : (
         <>

@@ -54,14 +54,7 @@ export default async function BlogPage() {
           </div>
         </div>
 
-        {posts.length === 0 ? (
-          <div className="text-center py-20">
-            <p className="text-6xl mb-4">&#127800;</p>
-            <p className="text-muted-foreground text-lg">还没有文章，敬请期待</p>
-          </div>
-        ) : (
-          <BlogList posts={posts} />
-        )}
+        <BlogList posts={posts} />
 
         <div className="flex justify-center mt-12 opacity-25">
           <ArkDiamond size={6} />
