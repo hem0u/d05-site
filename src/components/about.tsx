@@ -67,39 +67,6 @@ export function About() {
           ))}
         </div>
 
-        {/* Now status */}
-        {profile.now && (
-          <>
-            <Separator className="my-10" />
-            <div>
-              <div className="flex items-center justify-center gap-3 mb-6">
-                <ArkDiamond size={6} />
-                <h3 className="text-xs tracking-[0.3em] uppercase text-muted-foreground">
-                  Now / 当下
-                </h3>
-                <ArkDiamond size={6} />
-              </div>
-              <div className="grid gap-3 sm:grid-cols-3">
-                <div className="glass rounded-sm p-4 text-center border border-border/20">
-                  <p className="text-2xl mb-1">📺</p>
-                  <p className="text-[10px] text-muted-foreground/50 tracking-widest uppercase mb-1">Watching</p>
-                  <p className="text-xs text-muted-foreground">{profile.now.watching}</p>
-                </div>
-                <div className="glass rounded-sm p-4 text-center border border-border/20">
-                  <p className="text-2xl mb-1">📖</p>
-                  <p className="text-[10px] text-muted-foreground/50 tracking-widest uppercase mb-1">Reading</p>
-                  <p className="text-xs text-muted-foreground">{profile.now.reading}</p>
-                </div>
-                <div className="glass rounded-sm p-4 text-center border border-border/20">
-                  <p className="text-2xl mb-1">🎧</p>
-                  <p className="text-[10px] text-muted-foreground/50 tracking-widest uppercase mb-1">Listening</p>
-                  <p className="text-xs text-muted-foreground">{profile.now.listening}</p>
-                </div>
-              </div>
-            </div>
-          </>
-        )}
-
         <Separator className="my-10" />
 
         {/* Skills */}
