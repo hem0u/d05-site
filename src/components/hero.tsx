@@ -102,10 +102,11 @@ function TypewriterText({ text }: { text: string }) {
 }
 
 function calcDays(siteStart: string | undefined): number {
-  const start = new Date(siteStart || "2024-06-01")
-  const startDay = Date.UTC(start.getUTCFullYear(), start.getUTCMonth(), start.getUTCDate())
+  if (!siteStart) return 1
+  const [y, m, d] = siteStart.split("-").map(Number)
+  const startDay = new Date(y, m - 1, d).getTime()
   const now = new Date()
-  const nowDay = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())
+  const nowDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime()
   return Math.floor((nowDay - startDay) / 86400000) + 1
 }
 
