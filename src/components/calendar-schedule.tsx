@@ -170,7 +170,7 @@ export function CalendarSchedule() {
 
       {/* Calendar grid */}
       <div className="grid grid-cols-7 border-t border-l border-border/10 rounded-xl">
-        {cells.map((day, i) => {
+        {cells.map((day) => {
           const key = day ? dateKey(year, month, day) : ""
           const hasPlan = day ? plans.has(key) : false
           const isToday = day && key === todayKey()
