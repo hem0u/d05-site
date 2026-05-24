@@ -14,14 +14,22 @@ const QUOTES = [
   "ずっと、ずっと、一緒にいよう",
 ]
 
+function calcDays(siteStart: string | undefined): number {
+  if (!siteStart) return 0
+  const start = new Date(siteStart)
+  const startDay = Date.UTC(start.getUTCFullYear(), start.getUTCMonth(), start.getUTCDate())
+  const now = new Date()
+  const nowDay = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())
+  return Math.floor((nowDay - startDay) / 86400000) + 1
+}
+
 export function Footer() {
   const quote = QUOTES[Math.floor(Math.random() * QUOTES.length)]
-  const [daysOnline, setDaysOnline] = useState(0)
+  const [daysOnline, setDaysOnline] = useState(() => profile.siteStart ? calcDays(profile.siteStart) : 0)
 
   useEffect(() => {
     if (!profile.siteStart) return
-    const start = new Date(profile.siteStart).getTime()
-    const update = () => setDaysOnline(Math.floor((Date.now() - start) / 86400000))
+    const update = () => setDaysOnline(calcDays(profile.siteStart))
     update()
     const interval = setInterval(update, 60000)
     return () => clearInterval(interval)
