@@ -1,0 +1,169 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=Noto+Serif+SC:wght@400;500;600;700;900&family=ZCOOL+KuaiLe&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Arknights-inspired: cool neutral base + blue & amber accents */
+  --ark-blue: 210 100% 55%;
+  --ark-amber: 36 100% 55%;
+  --ark-blue-dim: 210 40% 50%;
+  --ark-amber-dim: 36 50% 50%;
+  --background: 220 15% 95%;
+  --foreground: 220 15% 12%;
+  --muted: 220 10% 90%;
+  --muted-foreground: 220 8% 42%;
+  --card: 220 10% 97%;
+  --card-foreground: 220 15% 12%;
+  --border: 220 10% 88%;
+  --ring: 210 100% 55%;
+  --radius: 0.5rem;
+}
+
+.dark {
+  /* Arknights cold dark: deep blue-black */
+  --ark-blue: 210 100% 60%;
+  --ark-amber: 36 100% 50%;
+  --ark-blue-dim: 210 30% 40%;
+  --ark-amber-dim: 36 30% 40%;
+  --background: 225 20% 5%;
+  --foreground: 220 10% 88%;
+  --muted: 225 15% 10%;
+  --muted-foreground: 220 8% 55%;
+  --card: 225 15% 8%;
+  --card-foreground: 220 10% 88%;
+  --border: 225 10% 16%;
+  --ring: 36 100% 50%;
+}
+
+@layer base {
+  html {
+    scroll-snap-type: y proximity;
+    scroll-padding-top: 3.5rem;
+  }
+  * {
+    border-color: hsl(var(--border));
+  }
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+@layer utilities {
+  /* ── Noise / grain texture (Arknights signature) ── */
+  .noise-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    pointer-events: none;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 256px 256px;
+  }
+
+  /* ── Frosted glass (Fluent Design / Arknights panels) ── */
+  .glass {
+    background: hsl(var(--card) / 0.7);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid hsl(var(--border) / 0.5);
+  }
+  .dark .glass {
+    background: hsl(var(--card) / 0.5);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+  }
+
+  /* ── Vignette (Arknights暗角) ── */
+  .vignette {
+    position: relative;
+  }
+  .vignette::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(ellipse at center, transparent 50%, hsl(var(--background) / 0.4) 100%);
+    z-index: 5;
+  }
+
+  /* ── Background patterns ── */
+  .bubble-pattern {
+    background-image: radial-gradient(circle at 20% 50%, hsl(var(--ark-blue) / 0.04) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, hsl(var(--ark-amber) / 0.03) 0%, transparent 50%),
+      radial-gradient(circle at 40% 80%, hsl(var(--ark-blue) / 0.03) 0%, transparent 50%);
+  }
+
+  .arknights-grid {
+    background-image:
+      linear-gradient(hsl(var(--ark-amber) / 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(var(--ark-amber) / 0.03) 1px, transparent 1px);
+    background-size: 64px 64px;
+  }
+
+  /* ── Arknights accent line ── */
+  .ark-line {
+    height: 2px;
+    background: linear-gradient(90deg, transparent, hsl(var(--ark-amber) / 0.6), transparent);
+  }
+
+  /* ── Text treatments ── */
+  .text-glow-blue {
+    text-shadow: 0 0 30px hsl(var(--ark-blue) / 0.3);
+  }
+  .text-glow-amber {
+    text-shadow: 0 0 30px hsl(var(--ark-amber) / 0.3);
+  }
+}
+
+/* ── Code syntax highlighting (outside @layer to prevent Tailwind purge) ── */
+/* Light mode */
+.hljs-keyword    { color: #a626a4; }
+.hljs-string     { color: #50a14f; }
+.hljs-number     { color: #986801; }
+.hljs-comment    { color: #a0a1a7; font-style: italic; }
+.hljs-function   { color: #4078f2; }
+.hljs-title      { color: #4078f2; }
+.hljs-params     { color: #383a42; }
+.hljs-built_in   { color: #c18401; }
+.hljs-type       { color: #c18401; }
+.hljs-literal    { color: #986801; }
+.hljs-meta       { color: #0184bc; }
+.hljs-attr       { color: #a626a4; }
+.hljs-variable   { color: #383a42; }
+.hljs-selector-class { color: #c18401; }
+.hljs-selector-tag   { color: #e45649; }
+.hljs-name       { color: #e45649; }
+.hljs-tag        { color: #e45649; }
+.hljs-addition   { color: #50a14f; }
+.hljs-deletion   { color: #e45649; }
+.hljs-property   { color: #383a42; }
+.hljs-title.class_ { color: #c18401; }
+.hljs-title.function_ { color: #4078f2; }
+
+/* Dark mode override — keep the terminal vibe */
+.dark .hljs-keyword    { color: #c792ea; }
+.dark .hljs-string     { color: #c3e88d; }
+.dark .hljs-number     { color: #f78c6c; }
+.dark .hljs-comment    { color: #546e7a; }
+.dark .hljs-function   { color: #82aaff; }
+.dark .hljs-title      { color: #82aaff; }
+.dark .hljs-params     { color: #eeffff; }
+.dark .hljs-built_in   { color: #ffcb6b; }
+.dark .hljs-type       { color: #ffcb6b; }
+.dark .hljs-literal    { color: #f78c6c; }
+.dark .hljs-meta       { color: #89ddff; }
+.dark .hljs-attr       { color: #c792ea; }
+.dark .hljs-variable   { color: #eeffff; }
+.dark .hljs-selector-class { color: #ffcb6b; }
+.dark .hljs-selector-tag   { color: #f07178; }
+.dark .hljs-name       { color: #f07178; }
+.dark .hljs-tag        { color: #f07178; }
+.dark .hljs-addition   { color: #c3e88d; }
+.dark .hljs-deletion   { color: #f07178; }
+.dark .hljs-property   { color: #eeffff; }
+.dark .hljs-title.class_ { color: #ffcb6b; }
+.dark .hljs-title.function_ { color: #82aaff; }
