@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useMemo } from "react"
+import Link from "next/link"
 import { ArrowDown, Github, Mail } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { profile } from "@/data/profile"
@@ -207,7 +208,7 @@ export function Hero() {
               <span className="text-border">/</span>
               <a href="#projects" className="hover:text-[hsl(var(--ark-amber))] transition-colors pointer-events-auto">Works</a>
               <span className="text-border">/</span>
-              <a href="/blog" className="hover:text-[hsl(var(--ark-amber))] transition-colors pointer-events-auto">Blog</a>
+              <Link href="/blog" className="hover:text-[hsl(var(--ark-amber))] transition-colors pointer-events-auto">Blog</Link>
             </div>
           </div>
         </div>

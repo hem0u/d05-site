@@ -43,7 +43,7 @@ export function Guestbook() {
         const data = await res.json()
         if (Array.isArray(data) && data.length >= 0) {
           setUseApi(true)
-          setMessages(data.map((m: any) => ({
+          setMessages((data as Array<{ id: number | string; name: string; content?: string; createdAt?: string }>).map((m) => ({
             id: m.id,
             name: m.name,
             text: m.content,
