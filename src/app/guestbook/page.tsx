@@ -16,7 +16,7 @@ export default function GuestbookPage() {
       <CornerDeco position="br" />
 
       <div className="absolute left-2 sm:left-8 top-1/3 pointer-events-none z-10 animate-float opacity-35 sm:opacity-50">
-        <ChibiFace size={30} expression="smile" />
+        <ChibiFace size={30} expression="happy" />
         <div className="mt-1 flex justify-center">
           <PairedStars size={18} />
         </div>
