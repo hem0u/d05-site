@@ -21,6 +21,15 @@ function dateKey(year: number, month: number, day: number) {
   return `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`
 }
 
+function todayKey() {
+  const d = new Date()
+  return dateKey(d.getFullYear(), d.getMonth(), d.getDate())
+}
+
+function isPast(key: string): boolean {
+  return key < todayKey()
+}
+
 export function CalendarSchedule() {
   const today = new Date()
   const [year, setYear] = useState(today.getFullYear())
@@ -73,9 +82,13 @@ export function CalendarSchedule() {
   }, [selected])
 
   const open = (key: string) => {
+    const hasPlan = plans.has(key)
+    if (isPast(key) && !hasPlan) return
     setSelected(key)
     setEditContent(plans.get(key) ?? "")
   }
+
+  const readonly = selected ? isPast(selected) : false
 
   const save = async () => {
     if (!selected) return
@@ -161,22 +174,24 @@ export function CalendarSchedule() {
         {cells.map((day, i) => {
           const key = day ? dateKey(year, month, day) : ""
           const hasPlan = day ? plans.has(key) : false
-          const isToday = day && key === dateKey(today.getFullYear(), today.getMonth(), today.getDate())
+          const isToday = day && key === todayKey()
           const isSelected = selected === key
+          const past = day ? isPast(key) : false
+          const clickable = day && (hasPlan || !past)
 
           return (
             <button
               key={i}
-              disabled={!day}
+              disabled={!clickable}
               onClick={() => day && open(key)}
               className={`aspect-square border-r border-b border-border/10 flex flex-col items-center justify-center transition-all relative
-                ${!day ? "bg-muted/10 cursor-default" : "hover:bg-muted/20 cursor-pointer"}
+                ${!clickable ? "bg-muted/10 cursor-default text-muted-foreground/25" : "hover:bg-muted/20 cursor-pointer"}
                 ${isSelected ? "bg-[hsl(var(--ark-amber)/0.08)] ring-1 ring-[hsl(var(--ark-amber))]" : ""}
               `}
             >
               {day && (
                 <>
-                  <span className={`text-sm ${isToday ? "font-bold text-[hsl(var(--ark-amber))]" : "text-foreground/80"}`}>
+                  <span className={`text-sm ${isToday ? "font-bold text-[hsl(var(--ark-amber))]" : ""}`}>
                     {day}
                   </span>
                   {hasPlan && <span className="text-xs mt-0.5">📌</span>}
@@ -195,38 +210,45 @@ export function CalendarSchedule() {
             <div className="flex items-center gap-2 mb-4">
               <CalIcon className="h-4 w-4 text-[hsl(var(--ark-amber))]" />
               <h3 className="font-serif text-sm font-bold">{selected}</h3>
+              {readonly && <span className="text-[10px] text-muted-foreground/40 ml-auto">历史记录</span>}
             </div>
-            <textarea
-              ref={textareaRef}
-              value={editContent}
-              onChange={(e) => setEditContent(e.target.value)}
-              placeholder="今天有什么安排？"
-              rows={4}
-              className="w-full resize-none bg-muted/30 border border-border/20 rounded-lg p-3 text-sm text-foreground placeholder:text-muted-foreground/30 outline-none focus:border-[hsl(var(--ark-amber)/0.4)] transition-colors"
-            />
-            <div className="flex items-center justify-between mt-4 pt-3 border-t border-border/10">
-              <button
-                onClick={del}
-                className="inline-flex items-center gap-1 px-2 py-1 text-[10px] text-red-400/50 hover:text-red-400 transition-colors"
-              >
-                <Trash2 className="h-3 w-3" />删除
-              </button>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setSelected(null)}
-                  className="px-3 py-1.5 text-[10px] tracking-widest uppercase text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  取消
-                </button>
-                <button
-                  onClick={save}
-                  disabled={saving}
-                  className="px-4 py-1.5 text-[10px] tracking-widest uppercase rounded-full bg-[hsl(var(--ark-amber))] text-black font-medium hover:opacity-90 transition-opacity disabled:opacity-20 disabled:cursor-not-allowed"
-                >
-                  {saving ? "保存中..." : "保存"}
-                </button>
-              </div>
-            </div>
+            {readonly ? (
+              <p className="text-sm text-muted-foreground/70 leading-relaxed whitespace-pre-wrap">{editContent}</p>
+            ) : (
+              <>
+                <textarea
+                  ref={textareaRef}
+                  value={editContent}
+                  onChange={(e) => setEditContent(e.target.value)}
+                  placeholder="今天有什么安排？"
+                  rows={4}
+                  className="w-full resize-none bg-muted/30 border border-border/20 rounded-lg p-3 text-sm text-foreground placeholder:text-muted-foreground/30 outline-none focus:border-[hsl(var(--ark-amber)/0.4)] transition-colors"
+                />
+                <div className="flex items-center justify-between mt-4 pt-3 border-t border-border/10">
+                  <button
+                    onClick={del}
+                    className="inline-flex items-center gap-1 px-2 py-1 text-[10px] text-red-400/50 hover:text-red-400 transition-colors"
+                  >
+                    <Trash2 className="h-3 w-3" />删除
+                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setSelected(null)}
+                      className="px-3 py-1.5 text-[10px] tracking-widest uppercase text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      取消
+                    </button>
+                    <button
+                      onClick={save}
+                      disabled={saving}
+                      className="px-4 py-1.5 text-[10px] tracking-widest uppercase rounded-full bg-[hsl(var(--ark-amber))] text-black font-medium hover:opacity-90 transition-opacity disabled:opacity-20 disabled:cursor-not-allowed"
+                    >
+                      {saving ? "保存中..." : "保存"}
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}
