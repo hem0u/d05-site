@@ -5,7 +5,7 @@ import { ArrowLeft, Calendar } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
-import { getBlogPost, getBlogPosts } from "@/lib/blog-db"
+import { getBlogPost } from "@/lib/blog-db"
 import { HexGrid, Sparkles, CornerDeco, ArkDiamond } from "@/components/decorations"
 import { ReadingProgress } from "@/components/reading-progress"
 import { CodeBlock } from "@/components/code-block"
@@ -25,10 +25,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-export async function generateStaticParams() {
-  const posts = await getBlogPosts()
-  return posts.map((post) => ({ slug: post.slug }))
-}
+export const dynamic = "force-dynamic"
 
 export default async function BlogPostPage({ params }: Props) {
   const { slug } = await params

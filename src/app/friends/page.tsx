@@ -4,6 +4,8 @@ import { HexGrid, Sparkles, CornerDeco, ArkDiamond, SakuraFlower, YuriBloom } fr
 import { FriendsList, RandomVisit } from "@/components/friends-list"
 import { getFriends } from "@/lib/friends-db"
 
+export const dynamic = "force-dynamic"
+
 export const metadata: Metadata = {
   title: "友链 — D05",
   description: "朋友们的小站",

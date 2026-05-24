@@ -4,6 +4,8 @@ import { BlogActions } from "@/components/blog-actions"
 import { getBlogPosts } from "@/lib/blog-db"
 import { ArkDiamond, HexGrid, Sparkles, CornerDeco, SakuraFlower, YuriBloom } from "@/components/decorations"
 
+export const dynamic = "force-dynamic"
+
 export const metadata: Metadata = {
   title: "BLOG — D05",
   description: "技术文章、生活随笔和一切有趣的想法",
