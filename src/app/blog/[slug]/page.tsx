@@ -166,7 +166,8 @@ function renderMarkdown(md: string): React.ReactNode {
     const line = lines[i]
 
     // Code blocks (allow leading whitespace)
-    if (line.trimStart().startsWith("```")) {
+    const trimmedLine = line.trimStart()
+    if (trimmedLine.startsWith("```")) {
       flushBlockquote()
       if (inCodeBlock) {
         elements.push(
@@ -179,7 +180,7 @@ function renderMarkdown(md: string): React.ReactNode {
         continue
       } else {
         inCodeBlock = true
-        codeLang = line.slice(3).trim()
+        codeLang = trimmedLine.slice(3).trim()
         i++
         continue
       }
@@ -318,8 +319,13 @@ function renderMarkdown(md: string): React.ReactNode {
     i++
   }
 
-  // Flush any remaining blockquote
+  // Flush any remaining blockquote or code block
   flushBlockquote()
+  if (inCodeBlock) {
+    elements.push(
+      <CodeBlock key={elements.length} code={codeLines.join("\n")} language={codeLang} html={highlightCode(codeLines.join("\n"), codeLang)} />
+    )
+  }
 
   return elements
 }
