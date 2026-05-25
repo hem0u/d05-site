@@ -16,6 +16,15 @@ async function withFallback<T>(fn: () => Promise<T>, fallbackValue: T): Promise<
 async function ensureSeeded() {
   if (seeded) return
   try {
+    await sql`CREATE TABLE IF NOT EXISTS blog_posts (
+      slug TEXT PRIMARY KEY,
+      title TEXT NOT NULL,
+      excerpt TEXT NOT NULL DEFAULT '',
+      date TEXT NOT NULL,
+      tags TEXT[] NOT NULL DEFAULT '{}',
+      content TEXT NOT NULL DEFAULT '',
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )`
     const { rows } = await sql`SELECT count(*) as c FROM blog_posts`
     if (Number(rows[0].c) > 0) { seeded = true; return }
     for (const post of fallback) {
@@ -26,7 +35,7 @@ async function ensureSeeded() {
       `
     }
     seeded = true
-  } catch { /* table might not exist yet; will retry next request */ }
+  } catch { /* DB unavailable; will retry next request */ }
 }
 
 export async function getBlogPosts(): Promise<BlogPost[]> {
