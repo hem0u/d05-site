@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { saveVerificationCode } from "@/lib/user-db"
+import { sendVerificationCode } from "@/lib/mail"
 
 export async function POST(req: NextRequest) {
   try {
@@ -9,20 +10,23 @@ export async function POST(req: NextRequest) {
     }
 
     const code = String(Math.floor(100000 + Math.random() * 900000))
-    const ok = await saveVerificationCode(email, code)
+    await saveVerificationCode(email, code)
 
-    if (!ok) {
-      return NextResponse.json({ error: "验证码发送失败，请重试" }, { status: 500 })
-    }
+    const sent = await sendVerificationCode(email, code)
 
-    // In production, send via email service. For now, log and return in dev.
     if (process.env.NODE_ENV === "development") {
       console.log(`[verify-code] ${email} → ${code}`)
-      return NextResponse.json({ code, message: "验证码已生成（开发模式直接返回）" })
+      return NextResponse.json({
+        code,
+        message: sent ? "验证码已发送至邮箱" : "验证码已生成（邮件未配置，开发模式直接返回）",
+      })
     }
 
-    console.log(`[verify-code] ${email} → ${code}`)
-    return NextResponse.json({ message: "验证码已发送" })
+    if (!sent) {
+      return NextResponse.json({ error: "邮件发送失败，请稍后重试" }, { status: 500 })
+    }
+
+    return NextResponse.json({ message: "验证码已发送至邮箱" })
   } catch (e) {
     console.error("[api/auth/send-code]", e)
     return NextResponse.json({ error: "服务器错误" }, { status: 500 })
