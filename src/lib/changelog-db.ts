@@ -31,15 +31,12 @@ let seeded = false
 async function ensureSeeded() {
   if (seeded) return
   try {
-    const { rows } = await sql`SELECT count(*) as c FROM changelog`
-    if (Number(rows[0].c) === 0) {
-      for (const entry of fallback) {
-        await sql`
-          INSERT INTO changelog (id, date, content, type)
-          VALUES (${entry.id}, ${entry.date}, ${entry.content}, ${entry.type})
-          ON CONFLICT (id) DO NOTHING
-        `
-      }
+    for (const entry of fallback) {
+      await sql`
+        INSERT INTO changelog (id, date, content, type)
+        VALUES (${entry.id}, ${entry.date}, ${entry.content}, ${entry.type})
+        ON CONFLICT (id) DO NOTHING
+      `
     }
     seeded = true
   } catch (e) {
