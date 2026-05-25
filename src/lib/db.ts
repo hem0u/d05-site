@@ -73,4 +73,53 @@ export async function ensureTables() {
       type TEXT NOT NULL DEFAULT 'update'
     )
   `
+
+  await sql`
+    CREATE TABLE IF NOT EXISTS users (
+      id SERIAL PRIMARY KEY,
+      email TEXT UNIQUE NOT NULL,
+      name TEXT NOT NULL DEFAULT '',
+      password_hash TEXT NOT NULL,
+      avatar TEXT DEFAULT NULL,
+      bio TEXT DEFAULT '',
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )
+  `
+
+  await sql`
+    CREATE TABLE IF NOT EXISTS verification_codes (
+      id SERIAL PRIMARY KEY,
+      email TEXT NOT NULL,
+      code TEXT NOT NULL,
+      expires_at TIMESTAMPTZ NOT NULL,
+      used BOOLEAN NOT NULL DEFAULT FALSE
+    )
+  `
+
+  await sql`
+    CREATE TABLE IF NOT EXISTS blog_likes (
+      id SERIAL PRIMARY KEY,
+      user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      post_slug TEXT NOT NULL,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      UNIQUE(user_id, post_slug)
+    )
+  `
+
+  await sql`
+    CREATE TABLE IF NOT EXISTS blog_comments (
+      id SERIAL PRIMARY KEY,
+      user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      post_slug TEXT NOT NULL,
+      content TEXT NOT NULL,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )
+  `
+
+  await sql`
+    CREATE TABLE IF NOT EXISTS blog_views (
+      post_slug TEXT PRIMARY KEY,
+      count INTEGER NOT NULL DEFAULT 0
+    )
+  `
 }

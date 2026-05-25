@@ -13,6 +13,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { ArkDiamond } from "@/components/decorations"
+import { UserMenu } from "@/components/user-menu"
 
 const links = [
   { href: "/", label: "首页" },
@@ -62,6 +63,7 @@ export function Header() {
         </nav>
 
         <div className="flex items-center gap-2">
+          <UserMenu />
           <ThemeToggle />
           {/* Mobile nav */}
           <Sheet>

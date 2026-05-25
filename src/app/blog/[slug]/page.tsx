@@ -12,6 +12,7 @@ import { CodeBlock } from "@/components/code-block"
 import { TableOfContents, type TocHeading } from "@/components/table-of-contents"
 import { PostActions } from "@/components/post-actions"
 import { NoSnapScroll } from "@/components/no-snap-scroll"
+import { LikeButton, ViewCounter, BlogComments } from "@/components/blog-interactions"
 import { highlightCode } from "@/lib/highlight"
 
 type Props = { params: Promise<{ slug: string }> }
@@ -97,6 +98,16 @@ export default async function BlogPostPage({ params }: Props) {
         >
           {renderMarkdown(post.content)}
         </div>
+
+        {/* Interactions */}
+        <div className="flex items-center gap-4 py-6">
+          <LikeButton slug={post.slug} />
+          <ViewCounter slug={post.slug} />
+        </div>
+
+        <Separator className="mb-8" />
+
+        <BlogComments slug={post.slug} />
 
         <Separator className="my-10" />
 
