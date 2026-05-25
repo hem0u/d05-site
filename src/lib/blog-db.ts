@@ -33,20 +33,13 @@ async function ensureSeeded() {
 }
 
 async function withDbFallback<T>(fn: () => Promise<T>, fallbackValue: T): Promise<T> {
-  for (let attempt = 0; attempt < 3; attempt++) {
-    try {
-      await ensureSeeded()
-      return await fn()
-    } catch (e) {
-      if (attempt === 2) {
-        console.error("[blog-db] all 3 attempts failed, using fallback:", e)
-        return fallbackValue
-      }
-      console.error(`[blog-db] attempt ${attempt + 1}/3 failed, retrying:`, e)
-      await new Promise((r) => setTimeout(r, 400 * Math.pow(2, attempt)))
-    }
+  try {
+    await ensureSeeded()
+    return await fn()
+  } catch (e) {
+    console.error("[blog-db] query failed, using fallback:", e)
+    return fallbackValue
   }
-  return fallbackValue
 }
 
 export async function getBlogPosts(): Promise<BlogPost[]> {
