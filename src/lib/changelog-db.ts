@@ -8,6 +8,8 @@ export type ChangelogEntry = {
 }
 
 const fallback: ChangelogEntry[] = [
+  { id: 16, date: "2026-05-26", type: "feat", content: "接入 Nodemailer 邮件服务，注册验证码通过邮箱发送（需配置 EMAIL_HOST 等环境变量）" },
+  { id: 15, date: "2026-05-26", type: "feat", content: "博客新增点赞、浏览统计、评论功能；新增个人资料页，可编辑头像昵称简介，查看点赞博文" },
   { id: 14, date: "2026-05-26", type: "feat", content: "新增登录/注册系统，支持邮箱验证码注册；导航栏显示头像ID或登录入口" },
   { id: 13, date: "2026-05-26", type: "update", content: "邻里页面滚动条改为 4px 细条，琥珀配色与整体风格统一" },
   { id: 12, date: "2026-05-26", type: "fix", content: "修复启动动画在上线后播放不完整的问题，改为等进度条和日志行全部完成后再淡出" },
