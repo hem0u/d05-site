@@ -148,3 +148,26 @@ pre code .hljs-title.function_ { color: #82aaff; }
 pre code .hljs-operator   { color: #89ddff; }
 pre code .hljs-punctuation { color: hsl(220, 10%, 60%); }
 pre code .hljs-regexp     { color: #c3e88d; }
+
+/* ── Thin custom scrollbar (Arknights theme) ── */
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--ark-amber) / 0.25) transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 4px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: hsl(var(--ark-amber) / 0.25);
+  border-radius: 9999px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--ark-amber) / 0.4);
+}

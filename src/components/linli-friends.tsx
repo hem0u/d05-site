@@ -5,7 +5,7 @@ import type { Friend } from "@/data/friends"
 
 export function LinliFriends({ friends }: { friends: Friend[] }) {
   return (
-    <div className="space-y-3 max-h-[calc(100vh-10rem)] overflow-y-auto pr-1">
+    <div className="space-y-3 max-h-[calc(100vh-10rem)] overflow-y-auto pr-1 scrollbar-thin">
       {friends.map((friend, idx) => (
         <a
           key={friend.name}
