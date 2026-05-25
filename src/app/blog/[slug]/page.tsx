@@ -141,12 +141,27 @@ function renderMarkdown(md: string): React.ReactNode {
   let inCodeBlock = false
   let codeLines: string[] = []
   let codeLang = ""
+  let inBlockquote = false
+  let quoteLines: string[] = []
+
+  function flushBlockquote() {
+    if (quoteLines.length > 0) {
+      elements.push(
+        <blockquote key={elements.length} className="border-l-4 border-[hsl(var(--ark-amber)/0.4)] pl-4 my-4 italic text-muted-foreground">
+          {quoteLines.map((ql, qi) => <p key={qi} className="my-1">{parseInline(ql)}</p>)}
+        </blockquote>
+      )
+      quoteLines = []
+    }
+    inBlockquote = false
+  }
 
   while (i < lines.length) {
     const line = lines[i]
 
     // Code blocks
     if (line.startsWith("```")) {
+      flushBlockquote()
       if (inCodeBlock) {
         elements.push(
           <CodeBlock key={elements.length} code={codeLines.join("\n")} language={codeLang} html={highlightCode(codeLines.join("\n"), codeLang)} />
@@ -166,6 +181,23 @@ function renderMarkdown(md: string): React.ReactNode {
     if (inCodeBlock) {
       codeLines.push(line)
       i++
+      continue
+    }
+
+    // Blockquote
+    if (line.startsWith("> ")) {
+      inBlockquote = true
+      quoteLines.push(line.slice(2))
+      i++
+      continue
+    }
+    if (inBlockquote && line.trim() === "") {
+      flushBlockquote()
+      i++
+      continue
+    }
+    if (inBlockquote) {
+      flushBlockquote()
       continue
     }
 
@@ -230,8 +262,8 @@ function renderMarkdown(md: string): React.ReactNode {
       }
     }
 
-    // Inline code-only lines
-    if (line.startsWith("`") && line.endsWith("`")) {
+    // Inline code-only lines (but not images or links)
+    if (line.startsWith("`") && line.endsWith("`") && !line.includes("](")) {
       elements.push(
         <p key={elements.length} className="my-1">
           <code>{line.slice(1, -1)}</code>
@@ -241,27 +273,58 @@ function renderMarkdown(md: string): React.ReactNode {
       continue
     }
 
+    // Image on its own line
+    if (line.startsWith("![") && line.includes("](")) {
+      const imgMatch = line.match(/!\[([^\]]*)\]\(([^)]+)\)/)
+      if (imgMatch) {
+        elements.push(
+          <figure key={elements.length} className="my-6">
+            <img src={imgMatch[2]} alt={imgMatch[1]} className="rounded-xl max-w-full" />
+            {imgMatch[1] && <figcaption className="text-center text-xs text-muted-foreground mt-2">{imgMatch[1]}</figcaption>}
+          </figure>
+        )
+        i++
+        continue
+      }
+    }
+
     // Paragraph
     elements.push(<p key={elements.length} className="my-2">{parseInline(line)}</p>)
     i++
   }
 
+  // Flush any remaining blockquote
+  flushBlockquote()
+
   return elements
 }
 
 function parseInline(text: string): React.ReactNode {
-  const parts = text.split(/(`[^`]+`)/g)
+  // Split by inline code, images, links, bold, italic
+  const parts = text.split(/(`[^`]+`|!\[[^\]]*\]\([^)]+\)|\[[^\]]+\]\([^)]+\)|\*\*[^*]+\*\*|\*[^*]+\*|__[^_]+__|_[^_]+_)/g)
   return parts.map((part, i) => {
+    // Inline code
     if (part.startsWith("`") && part.endsWith("`")) {
       return <code key={i}>{part.slice(1, -1)}</code>
     }
+    // Image
+    if (part.startsWith("![")) {
+      const m = part.match(/!\[([^\]]*)\]\(([^)]+)\)/)
+      if (m) return <img key={i} src={m[2]} alt={m[1]} className="inline rounded" />
+    }
+    // Link
+    if (part.startsWith("[")) {
+      const m = part.match(/\[([^\]]+)\]\(([^)]+)\)/)
+      if (m) return <a key={i} href={m[2]} className="text-[hsl(var(--ark-amber))] hover:underline">{m[1]}</a>
+    }
     // Bold
-    const boldParts = part.split(/(\*\*[^*]+\*\*)/g)
-    return boldParts.map((bp, j) => {
-      if (bp.startsWith("**") && bp.endsWith("**")) {
-        return <strong key={`${i}-${j}`}>{bp.slice(2, -2)}</strong>
-      }
-      return bp
-    })
+    if ((part.startsWith("**") && part.endsWith("**")) || (part.startsWith("__") && part.endsWith("__"))) {
+      return <strong key={i}>{part.slice(2, -2)}</strong>
+    }
+    // Italic
+    if ((part.startsWith("*") && part.endsWith("*")) || (part.startsWith("_") && part.endsWith("_"))) {
+      return <em key={i}>{part.slice(1, -1)}</em>
+    }
+    return part
   })
 }
