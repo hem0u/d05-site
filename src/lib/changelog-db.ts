@@ -23,8 +23,30 @@ const fallback: ChangelogEntry[] = [
   { id: 1, date: "2026-05-26", type: "fix", content: "修复博客文章点击后出现 404 的问题，移除不可靠的 HAS_DB 检测，改用 try/catch + 后备数据模式" },
 ]
 
+let seeded = false
+
+async function ensureSeeded() {
+  if (seeded) return
+  try {
+    const { rows } = await sql`SELECT count(*) as c FROM changelog`
+    if (Number(rows[0].c) === 0) {
+      for (const entry of fallback) {
+        await sql`
+          INSERT INTO changelog (id, date, content, type)
+          VALUES (${entry.id}, ${entry.date}, ${entry.content}, ${entry.type})
+          ON CONFLICT (id) DO NOTHING
+        `
+      }
+    }
+    seeded = true
+  } catch (e) {
+    console.error("[changelog-db] ensureSeeded failed:", e)
+  }
+}
+
 export async function getChangelog(): Promise<ChangelogEntry[]> {
   try {
+    await ensureSeeded()
     const { rows } = await sql<ChangelogEntry>`
       SELECT id, date, content, type FROM changelog ORDER BY date DESC, id DESC LIMIT 50
     `
@@ -32,5 +54,30 @@ export async function getChangelog(): Promise<ChangelogEntry[]> {
     return fallback
   } catch {
     return fallback
+  }
+}
+
+export async function addChangelogEntry(
+  date: string,
+  content: string,
+  type: "fix" | "feat" | "update",
+): Promise<ChangelogEntry> {
+  try {
+    await ensureSeeded()
+    const { rows } = await sql<ChangelogEntry>`
+      INSERT INTO changelog (date, content, type) VALUES (${date}, ${content}, ${type})
+      RETURNING id, date, content, type
+    `
+    return rows[0]
+  } catch (e) {
+    console.error("[changelog-db] addChangelogEntry failed:", e)
+    const entry: ChangelogEntry = {
+      id: Date.now(),
+      date,
+      content,
+      type,
+    }
+    fallback.unshift(entry)
+    return entry
   }
 }
