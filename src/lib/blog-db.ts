@@ -5,14 +5,6 @@ import type { BlogPost } from "@/data/blog-posts"
 
 let seeded = false
 
-async function withFallback<T>(fn: () => Promise<T>, fallbackValue: T): Promise<T> {
-  try {
-    return await fn()
-  } catch {
-    return fallbackValue
-  }
-}
-
 async function ensureSeeded() {
   if (seeded) return
   try {
@@ -35,12 +27,30 @@ async function ensureSeeded() {
       `
     }
     seeded = true
-  } catch { /* DB unavailable; will retry next request */ }
+  } catch (e) {
+    console.error("[blog-db] ensureSeeded failed:", e)
+  }
+}
+
+async function withDbFallback<T>(fn: () => Promise<T>, fallbackValue: T): Promise<T> {
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      await ensureSeeded()
+      return await fn()
+    } catch (e) {
+      if (attempt === 2) {
+        console.error("[blog-db] all 3 attempts failed, using fallback:", e)
+        return fallbackValue
+      }
+      console.error(`[blog-db] attempt ${attempt + 1}/3 failed, retrying:`, e)
+      await new Promise((r) => setTimeout(r, 400 * Math.pow(2, attempt)))
+    }
+  }
+  return fallbackValue
 }
 
 export async function getBlogPosts(): Promise<BlogPost[]> {
-  await ensureSeeded()
-  return withFallback(async () => {
+  return withDbFallback(async () => {
     const { rows } = await sql<BlogPost>`
       SELECT slug, title, excerpt, date, tags, content
       FROM blog_posts ORDER BY date DESC
@@ -50,8 +60,7 @@ export async function getBlogPosts(): Promise<BlogPost[]> {
 }
 
 export async function getBlogPost(slug: string): Promise<BlogPost | null> {
-  await ensureSeeded()
-  return withFallback(async () => {
+  return withDbFallback(async () => {
     const { rows } = await sql<BlogPost>`
       SELECT slug, title, excerpt, date, tags, content
       FROM blog_posts WHERE slug = ${slug}
@@ -61,7 +70,7 @@ export async function getBlogPost(slug: string): Promise<BlogPost | null> {
 }
 
 export async function getAllTags(): Promise<string[]> {
-  return withFallback(async () => {
+  return withDbFallback(async () => {
     const { rows } = await sql<{ tag: string }>`
       SELECT DISTINCT unnest(tags) AS tag FROM blog_posts ORDER BY tag
     `
