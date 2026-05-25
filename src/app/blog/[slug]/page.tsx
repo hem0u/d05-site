@@ -165,8 +165,8 @@ function renderMarkdown(md: string): React.ReactNode {
   while (i < lines.length) {
     const line = lines[i]
 
-    // Code blocks
-    if (line.startsWith("```")) {
+    // Code blocks (allow leading whitespace)
+    if (line.trimStart().startsWith("```")) {
       flushBlockquote()
       if (inCodeBlock) {
         elements.push(
@@ -325,8 +325,8 @@ function renderMarkdown(md: string): React.ReactNode {
 }
 
 function parseInline(text: string): React.ReactNode {
-  // Split by inline code, images, links, bold, italic
-  const parts = text.split(/(`[^`]+`|!\[[^\]]*\]\([^)]+\)|\[[^\]]+\]\([^)]+\)|\*\*[^*]+\*\*|\*[^*]+\*|__[^_]+__|_[^_]+_)/g)
+  // Split by inline code, images, links, bold, italic, strikethrough
+  const parts = text.split(/(`[^`]+`|!\[[^\]]*\]\([^)]+\)|\[[^\]]+\]\([^)]+\)|\*\*[^*]+\*\*|\*[^*]+\*|~~[^~]+~~|__[^_]+__|_[^_]+_)/g)
   return parts.map((part, i) => {
     // Inline code
     if (part.startsWith("`") && part.endsWith("`")) {
@@ -341,6 +341,10 @@ function parseInline(text: string): React.ReactNode {
     if (part.startsWith("[")) {
       const m = part.match(/\[([^\]]+)\]\(([^)]+)\)/)
       if (m) return <a key={i} href={m[2]} className="text-[hsl(var(--ark-amber))] hover:underline">{m[1]}</a>
+    }
+    // Strikethrough
+    if (part.startsWith("~~") && part.endsWith("~~")) {
+      return <del key={i}>{part.slice(2, -2)}</del>
     }
     // Bold
     if ((part.startsWith("**") && part.endsWith("**")) || (part.startsWith("__") && part.endsWith("__"))) {

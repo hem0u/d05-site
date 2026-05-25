@@ -5,6 +5,7 @@ import bash from "highlight.js/lib/languages/bash"
 import json from "highlight.js/lib/languages/json"
 import css from "highlight.js/lib/languages/css"
 import xml from "highlight.js/lib/languages/xml"
+import python from "highlight.js/lib/languages/python"
 
 hljs.registerLanguage("typescript", typescript)
 hljs.registerLanguage("ts", typescript)
@@ -17,6 +18,8 @@ hljs.registerLanguage("json", json)
 hljs.registerLanguage("css", css)
 hljs.registerLanguage("html", xml)
 hljs.registerLanguage("xml", xml)
+hljs.registerLanguage("python", python)
+hljs.registerLanguage("py", python)
 
 export function highlightCode(code: string, language?: string): string {
   if (language && hljs.getLanguage(language)) {
