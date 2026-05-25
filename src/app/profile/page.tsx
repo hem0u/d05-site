@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { Pencil, LogOut, Heart, MessageCircle } from "lucide-react"
+import { Pencil, LogOut, Heart } from "lucide-react"
 import { HexGrid, Sparkles, ArkDiamond } from "@/components/decorations"
 
 type User = {
