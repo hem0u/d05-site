@@ -7,14 +7,14 @@ export function CodeBlock({ html, code, language }: { html: string; code: string
   const [copied, setCopied] = useState(false)
 
   return (
-    <div className="relative group my-8 rounded-xl border border-border/30 bg-[hsl(225,20%,4%)] dark:bg-[hsl(225,20%,4%)] overflow-hidden">
-      {/* Arknights-style top accent bar */}
-      <div className="h-0.5 bg-gradient-to-r from-[hsl(var(--ark-blue)/0.6)] via-[hsl(var(--ark-amber)/0.3)] to-transparent" />
+    <div className="not-prose my-8 rounded-xl overflow-hidden" style={{ background: "#0b0d15", border: "1px solid rgba(255,255,255,0.06)" }}>
+      {/* Top accent bar */}
+      <div style={{ height: 2, background: "linear-gradient(90deg, rgba(96,165,250,0.4), rgba(245,158,11,0.2), transparent)" }} />
 
-      {/* Header row */}
-      <div className="flex items-center gap-2 px-4 py-2 border-b border-border/10">
-        <span className="w-2 h-2 rounded-full bg-[hsl(var(--ark-amber)/0.5)]" />
-        <span className="flex-1 text-[10px] tracking-[0.2em] uppercase text-muted-foreground/40 font-medium">
+      {/* Header */}
+      <div className="flex items-center gap-2 px-4 py-2" style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+        <span className="w-2 h-2 rounded-full" style={{ background: "rgba(245,158,11,0.4)" }} />
+        <span className="flex-1 text-[10px] tracking-[0.2em] uppercase font-medium" style={{ color: "rgba(255,255,255,0.25)" }}>
           {language || "code"}
         </span>
         <button
@@ -23,11 +23,12 @@ export function CodeBlock({ html, code, language }: { html: string; code: string
             setCopied(true)
             setTimeout(() => setCopied(false), 2000)
           }}
-          className="flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] text-muted-foreground/30 hover:text-[hsl(var(--ark-amber))] hover:bg-[hsl(var(--ark-amber)/0.08)] transition-all"
+          className="flex items-center gap-1 px-2 py-0.5 rounded text-[10px] transition-all"
+          style={{ color: copied ? "#4ade80" : "rgba(255,255,255,0.2)" }}
         >
           {copied ? (
             <>
-              <Check className="h-3 w-3 text-green-400" />
+              <Check className="h-3 w-3" />
               <span className="tracking-wider">已复制</span>
             </>
           ) : (
@@ -39,17 +40,16 @@ export function CodeBlock({ html, code, language }: { html: string; code: string
         </button>
       </div>
 
-      {/* Code area */}
-      <div className="relative">
-        {/* Line numbers gutter (decorative left stripe) */}
-        <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-[hsl(var(--ark-blue)/0.12)]" />
-        <pre className="overflow-x-auto p-5 pl-7 m-0 text-sm leading-relaxed font-mono text-[hsl(220,10%,78%)] bg-transparent">
+      {/* Code */}
+      <div className="relative" style={{ background: "#0b0d15" }}>
+        <div className="absolute left-0 top-0 bottom-0" style={{ width: 1, background: "rgba(96,165,250,0.1)" }} />
+        <pre className="m-0 overflow-x-auto p-5 pl-7 text-sm leading-relaxed font-mono" style={{ color: "#c8d0da", background: "#0b0d15" }}>
           <code dangerouslySetInnerHTML={{ __html: html }} />
         </pre>
       </div>
 
       {/* Bottom accent */}
-      <div className="h-px bg-gradient-to-r from-transparent via-[hsl(var(--ark-amber)/0.1)] to-transparent" />
+      <div style={{ height: 1, background: "linear-gradient(90deg, transparent, rgba(245,158,11,0.08), transparent)" }} />
     </div>
   )
 }
