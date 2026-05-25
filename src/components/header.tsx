@@ -20,8 +20,7 @@ const links = [
   { href: "/hobbies", label: "好物" },
   { href: "/records", label: "记录" },
   { href: "/schedule", label: "日程" },
-  { href: "/friends", label: "友链" },
-  { href: "/guestbook", label: "留言" },
+  { href: "/linli", label: "邻里" },
 ]
 
 export function Header() {
