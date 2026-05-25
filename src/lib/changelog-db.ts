@@ -18,6 +18,7 @@ const fallback: ChangelogEntry[] = [
   { id: 8, date: "2026-05-25", type: "update", content: "首页移除「当下」区域，精简布局" },
   { id: 9, date: "2026-05-26", type: "update", content: "导航栏友链和留言入口合并为「邻里」链接，指向整合后的三栏页面" },
   { id: 10, date: "2026-05-26", type: "update", content: "博客页面「小零的碎碎念」标题背景更换为 art-05" },
+  { id: 11, date: "2026-05-26", type: "feat", content: "邻里页面友链、留言、更新三栏添加滚动容器，内容多时不再撑长页面" },
 ]
 
 export async function getChangelog(): Promise<ChangelogEntry[]> {
