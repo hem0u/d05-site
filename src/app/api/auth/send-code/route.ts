@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+import { ensureTables } from "@/lib/db"
 import { saveVerificationCode } from "@/lib/user-db"
 import { sendVerificationCode } from "@/lib/mail"
 
@@ -10,7 +11,12 @@ export async function POST(req: NextRequest) {
     }
 
     const code = String(Math.floor(100000 + Math.random() * 900000))
-    await saveVerificationCode(email, code)
+
+    await ensureTables()
+    const saved = await saveVerificationCode(email, code)
+    if (!saved) {
+      return NextResponse.json({ error: "验证码保存失败，请稍后重试" }, { status: 500 })
+    }
 
     const sent = await sendVerificationCode(email, code)
 
