@@ -1,11 +1,9 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
 import Link from "next/link"
 
 export default function RegisterPage() {
-  const router = useRouter()
   const [email, setEmail] = useState("")
   const [name, setName] = useState("")
   const [password, setPassword] = useState("")
@@ -13,6 +11,7 @@ export default function RegisterPage() {
   const [sendingCode, setSendingCode] = useState(false)
   const [countdown, setCountdown] = useState(0)
   const [error, setError] = useState("")
+  const [success, setSuccess] = useState(false)
   const [loading, setLoading] = useState(false)
 
   const sendCode = async () => {
@@ -64,8 +63,8 @@ export default function RegisterPage() {
         setError(data.error || "注册失败")
         return
       }
-      router.push("/")
-      router.refresh()
+      setSuccess(true)
+      setTimeout(() => { window.location.href = "/login" }, 1500)
     } catch {
       setError("网络错误")
     } finally {
@@ -131,10 +130,11 @@ export default function RegisterPage() {
         </div>
 
         {error && <p className="text-xs text-red-400">{error}</p>}
+        {success && <p className="text-xs text-emerald-400">注册成功！即将跳转到登录页...</p>}
 
         <button
           type="submit"
-          disabled={loading || !email || !name || !password || code.length !== 6}
+          disabled={loading || success || !email || !name || !password || code.length !== 6}
           className="w-full py-2 text-sm tracking-wider rounded-lg bg-[hsl(var(--ark-amber)/0.15)] text-[hsl(var(--ark-amber))] hover:bg-[hsl(var(--ark-amber)/0.25)] transition-colors disabled:opacity-30"
         >
           {loading ? "注册中..." : "注册"}
