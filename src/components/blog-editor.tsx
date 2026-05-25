@@ -4,12 +4,12 @@ import { useState, useEffect } from "react"
 import { Plus, Edit3, Trash2, X } from "lucide-react"
 import type { BlogPost } from "@/data/blog-posts"
 
-function slugify(text: string) {
-  return text
-    .toLowerCase()
-    .replace(/[^a-z0-9一-鿿]+/g, "-")
-    .replace(/^-|-$/g, "")
-    .slice(0, 60) || Date.now().toString(36)
+function slugify(text: string): string {
+  const ascii = text.match(/[a-zA-Z0-9]+/g)
+  if (ascii && ascii.length > 0) {
+    return ascii.join("-").toLowerCase().slice(0, 60)
+  }
+  return `post-${Date.now().toString(36)}`
 }
 
 export function BlogEditor({ existing, onSaved, onClose }: { existing?: BlogPost; onSaved: () => void; onClose: () => void }) {
@@ -22,18 +22,16 @@ export function BlogEditor({ existing, onSaved, onClose }: { existing?: BlogPost
 
   const isNew = !existing
 
-  const autoSlug = () => {
-    if (isNew || !slug) setSlug(slugify(title))
-  }
-
   const save = async () => {
-    if (!title.trim() || !slug.trim()) return
+    if (!title.trim()) return
+    const finalSlug = isNew ? slugify(title.trim()) : slug
+    if (!finalSlug) return
     setSaving(true)
     await fetch("/api/blog", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        slug: slug.trim(),
+        slug: finalSlug,
         title: title.trim(),
         excerpt: excerpt.trim(),
         tags: tags.split(/[,，]/).map((t) => t.trim()).filter(Boolean),
@@ -68,10 +66,14 @@ export function BlogEditor({ existing, onSaved, onClose }: { existing?: BlogPost
         </div>
 
         <div className="space-y-3">
-          <input value={title} onChange={(e) => setTitle(e.target.value)} onBlur={autoSlug} placeholder="标题" className="w-full px-3 py-2 text-sm bg-muted/30 border border-border/20 rounded-lg text-foreground placeholder:text-muted-foreground/30 outline-none focus:border-[hsl(var(--ark-amber)/0.3)] transition-colors" />
+          <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="标题" className="w-full px-3 py-2 text-sm bg-muted/30 border border-border/20 rounded-lg text-foreground placeholder:text-muted-foreground/30 outline-none focus:border-[hsl(var(--ark-amber)/0.3)] transition-colors" />
+          {isNew && title.trim() && (
+            <p className="text-[10px] text-muted-foreground/40 font-mono px-1">
+              slug: {slugify(title.trim())}
+            </p>
+          )}
           <div className="flex gap-2">
-            <input value={slug} onChange={(e) => setSlug(e.target.value)} placeholder="slug" className="flex-1 px-3 py-2 text-xs font-mono bg-muted/30 border border-border/20 rounded-lg text-foreground/60 placeholder:text-muted-foreground/20 outline-none focus:border-[hsl(var(--ark-amber)/0.3)] transition-colors" />
-            <input value={tags} onChange={(e) => setTags(e.target.value)} placeholder="标签（逗号分隔）" className="flex-[2] px-3 py-2 text-xs bg-muted/30 border border-border/20 rounded-lg text-foreground/60 placeholder:text-muted-foreground/20 outline-none focus:border-[hsl(var(--ark-amber)/0.3)] transition-colors" />
+            <input value={tags} onChange={(e) => setTags(e.target.value)} placeholder="标签（逗号分隔）" className="flex-1 px-3 py-2 text-xs bg-muted/30 border border-border/20 rounded-lg text-foreground/60 placeholder:text-muted-foreground/20 outline-none focus:border-[hsl(var(--ark-amber)/0.3)] transition-colors" />
           </div>
           <input value={excerpt} onChange={(e) => setExcerpt(e.target.value)} placeholder="摘要" className="w-full px-3 py-2 text-xs bg-muted/30 border border-border/20 rounded-lg text-foreground/60 placeholder:text-muted-foreground/20 outline-none focus:border-[hsl(var(--ark-amber)/0.3)] transition-colors" />
           <textarea value={content} onChange={(e) => setContent(e.target.value)} placeholder="正文（Markdown）" rows={16} className="w-full resize-none bg-muted/30 border border-border/20 rounded-lg p-3 text-sm text-foreground placeholder:text-muted-foreground/30 font-mono outline-none focus:border-[hsl(var(--ark-amber)/0.3)] transition-colors" />
@@ -86,7 +88,7 @@ export function BlogEditor({ existing, onSaved, onClose }: { existing?: BlogPost
           <div className="flex-1" />
           <div className="flex items-center gap-2">
             <button onClick={onClose} className="px-3 py-1.5 text-[10px] tracking-widest uppercase text-muted-foreground hover:text-foreground transition-colors">取消</button>
-            <button onClick={save} disabled={!title.trim() || !slug.trim() || saving} className="px-4 py-1.5 text-[10px] tracking-widest uppercase rounded-full bg-[hsl(var(--ark-amber))] text-black font-medium hover:opacity-90 transition-opacity disabled:opacity-20 disabled:cursor-not-allowed">{saving ? "保存中..." : "保存"}</button>
+            <button onClick={save} disabled={!title.trim() || saving} className="px-4 py-1.5 text-[10px] tracking-widest uppercase rounded-full bg-[hsl(var(--ark-amber))] text-black font-medium hover:opacity-90 transition-opacity disabled:opacity-20 disabled:cursor-not-allowed">{saving ? "保存中..." : "保存"}</button>
           </div>
         </div>
       </div>

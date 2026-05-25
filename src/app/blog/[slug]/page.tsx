@@ -29,9 +29,13 @@ export const dynamic = "force-dynamic"
 
 export default async function BlogPostPage({ params }: Props) {
   const { slug } = await params
+  console.log("[blog/[slug]] looking up:", slug)
   const post = await getBlogPost(slug)
 
-  if (!post) notFound()
+  if (!post) {
+    console.log("[blog/[slug]] NOT FOUND for slug:", slug)
+    notFound()
+  }
 
   const headings = extractHeadings(post.content)
 
