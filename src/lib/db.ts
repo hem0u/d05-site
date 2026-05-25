@@ -64,4 +64,13 @@ export async function ensureTables() {
       content TEXT NOT NULL DEFAULT ''
     )
   `
+
+  await sql`
+    CREATE TABLE IF NOT EXISTS changelog (
+      id SERIAL PRIMARY KEY,
+      date TEXT NOT NULL,
+      content TEXT NOT NULL DEFAULT '',
+      type TEXT NOT NULL DEFAULT 'update'
+    )
+  `
 }
