@@ -246,20 +246,27 @@ function renderMarkdown(md: string): React.ReactNode {
       continue
     }
 
-    // List items
-    if (line.match(/^\d+\.\s/)) {
+    // Ordered list
+    if (line.trimStart().match(/^\d+\.\s/)) {
       const items: React.ReactNode[] = []
-      while (i < lines.length && lines[i].match(/^\d+\.\s/)) {
-        items.push(<li key={i}>{parseInline(lines[i].replace(/^\d+\.\s/, ""))}</li>)
+      while (i < lines.length) {
+        const tl = lines[i].trimStart()
+        if (!tl.match(/^\d+\.\s/)) break
+        const baseIndent = lines[i].length - tl.length
+        items.push(<li key={i} className={baseIndent >= 2 ? "ml-4" : ""}>{parseInline(tl.replace(/^\d+\.\s/, ""))}</li>)
         i++
       }
       elements.push(<ol key={elements.length} className="list-decimal pl-6 my-4 space-y-1">{items}</ol>)
       continue
     }
-    if (line.startsWith("- ")) {
+    // Unordered list
+    if (line.trimStart().startsWith("- ")) {
       const items: React.ReactNode[] = []
-      while (i < lines.length && lines[i].startsWith("- ")) {
-        items.push(<li key={i}>{parseInline(lines[i].slice(2))}</li>)
+      while (i < lines.length) {
+        const tl = lines[i].trimStart()
+        if (!tl.startsWith("- ")) break
+        const baseIndent = lines[i].length - tl.length
+        items.push(<li key={i} className={baseIndent >= 2 ? "ml-4" : ""}>{parseInline(tl.slice(2))}</li>)
         i++
       }
       elements.push(<ul key={elements.length} className="list-disc pl-6 my-4 space-y-1">{items}</ul>)
