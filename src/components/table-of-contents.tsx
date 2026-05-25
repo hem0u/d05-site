@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { ArkDiamond } from "@/components/decorations"
 
-export type TocHeading = { id: string; text: string; level: 2 | 3 }
+export type TocHeading = { id: string; text: string; level: 1 | 2 | 3 | 4 }
 
 export function TableOfContents({ headings }: { headings: TocHeading[] }) {
   const [activeId, setActiveId] = useState<string>("")
@@ -43,7 +43,7 @@ export function TableOfContents({ headings }: { headings: TocHeading[] }) {
             <a
               href={`#${h.id}`}
               className={`block text-xs py-1.5 transition-all duration-200 hover:text-[hsl(var(--ark-amber))] relative ${
-                h.level === 3 ? "pl-4" : "pl-3"
+                h.level >= 3 ? "pl-4" : h.level >= 2 ? "pl-3" : "pl-1"
               } ${
                 activeId === h.id
                   ? "text-[hsl(var(--ark-amber))] font-medium"

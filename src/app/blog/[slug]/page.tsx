@@ -122,12 +122,18 @@ function slugify(text: string): string {
 function extractHeadings(md: string): TocHeading[] {
   const headings: TocHeading[] = []
   for (const line of md.split("\n")) {
-    if (line.startsWith("### ")) {
+    if (line.startsWith("#### ")) {
+      const text = line.slice(5).replace(/\*\*/g, "").replace(/`/g, "")
+      headings.push({ id: slugify(text), text, level: 4 })
+    } else if (line.startsWith("### ")) {
       const text = line.slice(4).replace(/\*\*/g, "").replace(/`/g, "")
       headings.push({ id: slugify(text), text, level: 3 })
     } else if (line.startsWith("## ")) {
       const text = line.slice(3).replace(/\*\*/g, "").replace(/`/g, "")
       headings.push({ id: slugify(text), text, level: 2 })
+    } else if (line.startsWith("# ")) {
+      const text = line.slice(2).replace(/\*\*/g, "").replace(/`/g, "")
+      headings.push({ id: slugify(text), text, level: 1 })
     }
   }
   return headings
@@ -208,6 +214,12 @@ function renderMarkdown(md: string): React.ReactNode {
     }
 
     // Headers
+    if (line.startsWith("#### ")) {
+      const text = line.slice(5)
+      elements.push(<h4 key={elements.length} id={slugify(text.replace(/\*\*/g, "").replace(/`/g, ""))}>{parseInline(text)}</h4>)
+      i++
+      continue
+    }
     if (line.startsWith("### ")) {
       const text = line.slice(4)
       elements.push(<h3 key={elements.length} id={slugify(text.replace(/\*\*/g, "").replace(/`/g, ""))}>{parseInline(text)}</h3>)
@@ -217,6 +229,12 @@ function renderMarkdown(md: string): React.ReactNode {
     if (line.startsWith("## ")) {
       const text = line.slice(3)
       elements.push(<h2 key={elements.length} id={slugify(text.replace(/\*\*/g, "").replace(/`/g, ""))}>{parseInline(text)}</h2>)
+      i++
+      continue
+    }
+    if (line.startsWith("# ")) {
+      const text = line.slice(2)
+      elements.push(<h1 key={elements.length} id={slugify(text.replace(/\*\*/g, "").replace(/`/g, ""))}>{parseInline(text)}</h1>)
       i++
       continue
     }
