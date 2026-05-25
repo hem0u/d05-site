@@ -8,7 +8,7 @@ const typeConfig: Record<string, { label: string; color: string }> = {
 
 export function LinliUpdates({ entries }: { entries: ChangelogEntry[] }) {
   return (
-    <div className="space-y-0">
+    <div className="space-y-0 max-h-[calc(100vh-10rem)] overflow-y-auto pr-1">
       {entries.map((entry, idx) => {
         const config = typeConfig[entry.type] ?? typeConfig.update
         return (

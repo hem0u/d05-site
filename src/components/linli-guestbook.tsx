@@ -118,7 +118,7 @@ export function LinliGuestbook() {
       </div>
 
       {/* Messages */}
-      <div className="space-y-2">
+      <div className="space-y-2 max-h-[calc(100vh-16rem)] overflow-y-auto pr-1">
         {messages.map((msg, idx) => (
           <div
             key={msg.id}
