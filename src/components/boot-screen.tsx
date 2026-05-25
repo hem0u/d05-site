@@ -59,11 +59,27 @@ export function BootScreen() {
     }
     if (!played) sessionStorage.setItem(key, "1")
 
+    let progressDone = false
+    let linesDone = false
+    const allLines = BOOT_LINES.length
+
+    const tryFinish = () => {
+      if (progressDone && linesDone) {
+        setPhase("glitch")
+        setTimeout(() => setPhase("fadeout"), 300)
+        setTimeout(() => setPhase("done"), 1300) // 300 glitch + 900 fade + 100 buffer
+      }
+    }
+
     // Progress: fast start, then slow, then fast finish
     const progressInterval = setInterval(() => {
       setProgress((p) => {
         if (p >= 100) {
           clearInterval(progressInterval)
+          if (!progressDone) {
+            progressDone = true
+            setTimeout(tryFinish, 0)
+          }
           return 100
         }
         if (p < 30) return p + Math.random() * 12 + 6
@@ -73,22 +89,20 @@ export function BootScreen() {
       })
     }, 70)
 
-    // Log lines appear sequentially (faster)
+    // Log lines appear sequentially
     const lineTimers = BOOT_LINES.map((_, i) =>
-      setTimeout(() => setVisibleLines(i + 1), 200 + i * 220),
+      setTimeout(() => {
+        setVisibleLines(i + 1)
+        if (i + 1 >= allLines) {
+          linesDone = true
+          setTimeout(tryFinish, 0)
+        }
+      }, 200 + i * 220),
     )
-
-    // Phase transitions (shorter)
-    const glitchTimer = setTimeout(() => setPhase("glitch"), 2000)
-    const fadeTimer = setTimeout(() => setPhase("fadeout"), 2300)
-    const doneTimer = setTimeout(() => setPhase("done"), 3100)
 
     return () => {
       clearInterval(progressInterval)
       lineTimers.forEach(clearTimeout)
-      clearTimeout(glitchTimer)
-      clearTimeout(fadeTimer)
-      clearTimeout(doneTimer)
     }
   }, [])
 
