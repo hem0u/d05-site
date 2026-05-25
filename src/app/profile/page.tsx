@@ -29,8 +29,33 @@ export default function ProfilePage() {
   const [editName, setEditName] = useState("")
   const [editBio, setEditBio] = useState("")
   const [editAvatar, setEditAvatar] = useState("")
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
   const [msg, setMsg] = useState("")
+
+  const handleAvatarFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    const canvas = document.createElement("canvas")
+    canvas.width = 200
+    canvas.height = 200
+    const ctx = canvas.getContext("2d")
+    if (!ctx) return
+
+    const img = new Image()
+    img.onload = () => {
+      // Crop to square center
+      const size = Math.min(img.width, img.height)
+      const sx = (img.width - size) / 2
+      const sy = (img.height - size) / 2
+      ctx.drawImage(img, sx, sy, size, size, 0, 0, 200, 200)
+      const dataUrl = canvas.toDataURL("image/jpeg", 0.75)
+      setEditAvatar(dataUrl)
+      setAvatarPreview(dataUrl)
+    }
+    img.src = URL.createObjectURL(file)
+  }
 
   const fetchUser = useCallback(async () => {
     const res = await fetch("/api/auth/me")
@@ -43,6 +68,7 @@ export default function ProfilePage() {
     setEditName(data.user.name)
     setEditBio(data.user.bio || "")
     setEditAvatar(data.user.avatar || "")
+    setAvatarPreview(data.user.avatar || null)
 
     // Fetch liked posts
     const likeRes = await fetch(`/api/blog/likes?user=${data.user.id}`)
@@ -99,13 +125,29 @@ export default function ProfilePage() {
             <div className="space-y-4">
               <h2 className="font-serif text-lg font-bold">编辑资料</h2>
               <div>
-                <label className="text-xs text-muted-foreground mb-1 block">头像 URL</label>
-                <input
-                  value={editAvatar}
-                  onChange={(e) => setEditAvatar(e.target.value)}
-                  placeholder="https://... 头像图片链接"
-                  className="w-full px-3 py-2 text-sm bg-muted/30 border border-border/20 rounded-lg outline-none focus:border-[hsl(var(--ark-amber)/0.3)]"
-                />
+                <label className="text-xs text-muted-foreground mb-1 block">头像</label>
+                <div className="flex items-center gap-3">
+                  <div className="w-14 h-14 rounded-full bg-[hsl(var(--ark-blue)/0.15)] flex items-center justify-center overflow-hidden border border-border/20 shrink-0">
+                    {avatarPreview || user.avatar ? (
+                      <img src={avatarPreview || user.avatar || ""} alt="" className="w-full h-full object-cover" />
+                    ) : (
+                      <span className="text-xl font-bold text-[hsl(var(--ark-blue))]">{editName[0] || user.name[0]}</span>
+                    )}
+                  </div>
+                  <label className="flex-1 px-3 py-2 text-xs tracking-wider rounded-lg border border-border/20 text-muted-foreground hover:text-[hsl(var(--ark-amber))] hover:border-[hsl(var(--ark-amber)/0.3)] cursor-pointer transition-colors text-center">
+                    {avatarPreview ? "更换图片" : "从电脑选择图片"}
+                    <input type="file" accept="image/*" onChange={handleAvatarFile} className="hidden" />
+                  </label>
+                  {avatarPreview && (
+                    <button
+                      type="button"
+                      onClick={() => { setEditAvatar(""); setAvatarPreview(null) }}
+                      className="text-[10px] text-muted-foreground/40 hover:text-red-400 shrink-0"
+                    >
+                      移除
+                    </button>
+                  )}
+                </div>
               </div>
               <div>
                 <label className="text-xs text-muted-foreground mb-1 block">昵称</label>

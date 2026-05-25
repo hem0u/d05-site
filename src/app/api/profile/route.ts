@@ -28,7 +28,12 @@ export async function PUT(req: NextRequest) {
     }
     updates.name = name
   }
-  if (avatar !== undefined) updates.avatar = avatar
+  if (avatar !== undefined) {
+    if (avatar && avatar.length > 200_000) {
+      return NextResponse.json({ error: "头像图片过大" }, { status: 400 })
+    }
+    updates.avatar = avatar
+  }
   if (bio !== undefined) {
     if (bio.length > 100) {
       return NextResponse.json({ error: "简介最多100字" }, { status: 400 })
