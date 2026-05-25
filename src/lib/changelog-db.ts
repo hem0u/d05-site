@@ -16,6 +16,7 @@ const fallback: ChangelogEntry[] = [
   { id: 6, date: "2026-05-26", type: "feat", content: "友链、留言、更新记录整合为「邻里」页面，三栏布局" },
   { id: 7, date: "2026-05-25", type: "feat", content: "博客页面新增「写文章」按钮，支持在线 Markdown 编辑和发布" },
   { id: 8, date: "2026-05-25", type: "update", content: "首页移除「当下」区域，精简布局" },
+  { id: 9, date: "2026-05-26", type: "update", content: "导航栏友链和留言入口合并为「邻里」链接，指向整合后的三栏页面" },
 ]
 
 export async function getChangelog(): Promise<ChangelogEntry[]> {
