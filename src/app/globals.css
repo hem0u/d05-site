@@ -120,6 +120,10 @@
 }
 
 /* ── Code syntax highlighting (outside @layer to prevent Tailwind purge) ── */
+pre code .hljs {
+  color: inherit;
+}
+
 /* Light mode */
 .hljs-keyword    { color: #a626a4; }
 .hljs-string     { color: #50a14f; }

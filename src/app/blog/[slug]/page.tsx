@@ -11,6 +11,7 @@ import { ReadingProgress } from "@/components/reading-progress"
 import { CodeBlock } from "@/components/code-block"
 import { TableOfContents, type TocHeading } from "@/components/table-of-contents"
 import { PostActions } from "@/components/post-actions"
+import { NoSnapScroll } from "@/components/no-snap-scroll"
 import { highlightCode } from "@/lib/highlight"
 
 type Props = { params: Promise<{ slug: string }> }
@@ -40,7 +41,9 @@ export default async function BlogPostPage({ params }: Props) {
   const headings = extractHeadings(post.content)
 
   return (
-    <article className="relative py-16 px-4 sm:px-6 animate-fade-in overflow-hidden">
+    <>
+      <NoSnapScroll />
+      <article className="relative py-16 px-4 sm:px-6 animate-fade-in overflow-hidden">
       <ReadingProgress />
       <HexGrid opacity={0.03} />
       <Sparkles count={8} />
@@ -109,6 +112,7 @@ export default async function BlogPostPage({ params }: Props) {
         </footer>
       </div>{/* max-w-3xl */}
     </article>
+    </>
   )
 }
 

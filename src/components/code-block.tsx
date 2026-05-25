@@ -8,7 +8,7 @@ export function CodeBlock({ html, code, language }: { html: string; code: string
 
   return (
     <div className="relative group my-6">
-      <div className="flex items-center justify-between px-4 py-1.5 bg-muted/60 rounded-t-xl border border-border/20 border-b-0">
+      <div className="flex items-center justify-between px-4 py-1 bg-muted/60 rounded-t-lg border border-border/20 border-b-0">
         <span className="text-[10px] tracking-[0.15em] uppercase text-muted-foreground/50">
           {language || "code"}
         </span>
@@ -27,7 +27,7 @@ export function CodeBlock({ html, code, language }: { html: string; code: string
           )}
         </button>
       </div>
-      <pre className="overflow-x-auto p-4 pt-3 text-sm bg-muted/40 rounded-b-xl border border-border/20 border-t-0">
+      <pre className="overflow-x-auto p-4 pt-2 text-sm leading-relaxed bg-muted/40 rounded-b-lg border border-border/20 border-t-0 text-foreground">
         <code dangerouslySetInnerHTML={{ __html: html }} />
       </pre>
     </div>
