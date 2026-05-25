@@ -31,7 +31,7 @@ export default async function BlogPage() {
         {/* Header with ambient image background */}
         <div className="relative text-center mb-14 animate-slide-up overflow-hidden rounded-xl">
           <img
-            src="/images/art-04.jpg"
+            src="/images/art-05.jpg"
             alt=""
             className="absolute inset-0 w-full h-full object-cover opacity-25 dark:opacity-15"
             style={{ filter: "blur(40px) saturate(0.8)" }}
