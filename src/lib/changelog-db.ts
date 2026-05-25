@@ -8,6 +8,7 @@ export type ChangelogEntry = {
 }
 
 const fallback: ChangelogEntry[] = [
+  { id: 18, date: "2026-05-26", type: "fix", content: "修复登录后导航栏仍显示登录按钮的问题（改用硬导航刷新布局）；注册成功后提示并跳转登录页" },
   { id: 17, date: "2026-05-26", type: "fix", content: "修复验证码邮件已发送但注册时提示「验证码错误或已过期」的问题（verification_codes 表未创建 + 保存结果未检查）" },
   { id: 16, date: "2026-05-26", type: "feat", content: "接入 Nodemailer 邮件服务，注册验证码通过邮箱发送（需配置 EMAIL_HOST 等环境变量）" },
   { id: 15, date: "2026-05-26", type: "feat", content: "博客新增点赞、浏览统计、评论功能；新增个人资料页，可编辑头像昵称简介，查看点赞博文" },
