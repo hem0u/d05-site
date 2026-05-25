@@ -8,6 +8,7 @@ export type ChangelogEntry = {
 }
 
 const fallback: ChangelogEntry[] = [
+  { id: 13, date: "2026-05-26", type: "update", content: "邻里页面滚动条改为 4px 细条，琥珀配色与整体风格统一" },
   { id: 12, date: "2026-05-26", type: "fix", content: "修复启动动画在上线后播放不完整的问题，改为等进度条和日志行全部完成后再淡出" },
   { id: 11, date: "2026-05-26", type: "feat", content: "邻里页面友链、留言、更新三栏添加滚动容器，内容多时不再撑长页面" },
   { id: 10, date: "2026-05-26", type: "update", content: "博客页面「小零的碎碎念」标题背景更换为 art-05" },
