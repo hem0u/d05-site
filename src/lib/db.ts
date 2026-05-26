@@ -88,30 +88,14 @@ export async function ensureTables() {
     )
   `
 
-  // Migration: add role column to existing users table
+  // Migration: add role column to existing users table (single statement for PgBouncer compat)
   try {
-    await sql`
-      DO $$
-      BEGIN
-        IF NOT EXISTS (SELECT 1 FROM information_schema.columns
-                       WHERE table_name = 'users' AND column_name = 'role') THEN
-          ALTER TABLE users ADD COLUMN role TEXT NOT NULL DEFAULT 'user';
-        END IF;
-      END $$;
-    `
+    await sql.query("ALTER TABLE users ADD COLUMN IF NOT EXISTS role TEXT NOT NULL DEFAULT 'user'")
   } catch (e) { console.error("[db] add role column failed:", e) }
 
   // Migration: add user_id column to existing guestbook_messages table
   try {
-    await sql`
-      DO $$
-      BEGIN
-        IF NOT EXISTS (SELECT 1 FROM information_schema.columns
-                       WHERE table_name = 'guestbook_messages' AND column_name = 'user_id') THEN
-          ALTER TABLE guestbook_messages ADD COLUMN user_id INTEGER;
-        END IF;
-      END $$;
-    `
+    await sql.query("ALTER TABLE guestbook_messages ADD COLUMN IF NOT EXISTS user_id INTEGER")
   } catch (e) { console.error("[db] add user_id column failed:", e) }
 
   await sql`
