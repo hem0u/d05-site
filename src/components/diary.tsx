@@ -211,14 +211,10 @@ export function Diary() {
 
             {/* Photos */}
             {activeEntry.photos.length > 0 && (
-              <div
-                className={`grid gap-3 ${
-                  activeEntry.photos.length === 1 ? "grid-cols-1" : activeEntry.photos.length === 2 ? "grid-cols-2" : "grid-cols-3"
-                }`}
-              >
+              <div className="flex flex-wrap gap-3 justify-center">
                 {activeEntry.photos.map((src, i) => (
-                  <div key={i} className="aspect-square rounded-xl overflow-hidden bg-muted/30 border border-border/20 hover:border-[hsl(var(--ark-amber)/0.2)] transition-colors">
-                    <img src={src} alt="" className="w-full h-full object-cover" />
+                  <div key={i} className="max-w-[240px] rounded-xl overflow-hidden bg-muted/30 border border-border/20 hover:border-[hsl(var(--ark-amber)/0.2)] transition-colors">
+                    <img src={src} alt="" className="w-full h-auto max-h-64 object-contain" />
                   </div>
                 ))}
               </div>
