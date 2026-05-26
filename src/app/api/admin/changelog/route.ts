@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { isAdmin } from "@/lib/auth"
 import { sql, ensureTables } from "@/lib/db"
+import { setCache } from "@/lib/api-cache"
 
 export async function GET() {
   await ensureTables()
@@ -28,6 +29,7 @@ export async function POST(req: NextRequest) {
       INSERT INTO changelog (date, content, type) VALUES (${date}, ${content}, ${type})
       RETURNING id, date, content, type
     `
+    setCache("changelog", null)
     return NextResponse.json({ entry: rows[0] })
   } catch {
     return NextResponse.json({ error: "Failed" }, { status: 500 })
@@ -41,6 +43,7 @@ export async function DELETE(req: NextRequest) {
     const id = req.nextUrl.searchParams.get("id")
     if (!id) return NextResponse.json({ error: "id required" }, { status: 400 })
     await sql`DELETE FROM changelog WHERE id = ${Number(id)}`
+    setCache("changelog", null)
     return NextResponse.json({ ok: true })
   } catch {
     return NextResponse.json({ error: "Failed" }, { status: 500 })

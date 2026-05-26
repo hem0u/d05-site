@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react"
 import type { Hobby } from "@/data/hobbies"
 import { HexGrid, Sparkles, CornerDeco, ArkDiamond, SakuraFlower, YuriBloom } from "@/components/decorations"
+import { CardSkeleton } from "@/components/skeleton"
 
 function getCardRects() {
   const cards = document.querySelectorAll<HTMLElement>("[data-hobby-id]")
@@ -17,6 +18,7 @@ function getCardRects() {
 export function HobbiesContent() {
   const [hobbies, setHobbies] = useState<Hobby[]>([])
   const [categories, setCategories] = useState<string[]>([])
+  const [loading, setLoading] = useState(true)
   const [selected, setSelected] = useState<string | null>(null)
   const [animatingIn, setAnimatingIn] = useState(false)
   const [closing, setClosing] = useState(false)
@@ -33,6 +35,7 @@ export function HobbiesContent() {
         setCategories(["全部", ...cats.sort()])
       })
       .catch(() => {})
+      .finally(() => setLoading(false))
   }, [])
   const filteredHobbies = activeCategory === "全部"
     ? hobbies
@@ -139,8 +142,11 @@ export function HobbiesContent() {
           {/* Card grid */}
           <div className="flex-1 min-w-0">
             <div className="mb-4">
-              <span className="text-[10px] text-muted-foreground/30 tracking-wider">{filteredHobbies.length} 件</span>
+              <span className="text-[10px] text-muted-foreground/30 tracking-wider">{loading ? "加载中..." : `${filteredHobbies.length} 件`}</span>
             </div>
+            {loading ? (
+              <CardSkeleton count={6} />
+            ) : (
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {filteredHobbies.map((h) => {
             const isThisCard = selected === h.id && !closing
@@ -184,6 +190,7 @@ export function HobbiesContent() {
             )
           })}
             </div>
+            )}
           </div>
         </div>
 

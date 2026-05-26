@@ -2,11 +2,17 @@ import { NextRequest, NextResponse } from "next/server"
 import { isAdmin } from "@/lib/auth"
 import { sql } from "@/lib/db"
 import { toPgArray } from "@/lib/utils"
+import { getCached, setCache } from "@/lib/api-cache"
 
 export async function GET() {
+  const cached = getCached<{ posts: unknown[] }>("blog")
+  if (cached) return NextResponse.json(cached)
+
   try {
     const { rows } = await sql`SELECT slug, title, excerpt, date, tags, content FROM blog_posts ORDER BY date DESC`
-    return NextResponse.json({ posts: rows })
+    const data = { posts: rows }
+    setCache("blog", data)
+    return NextResponse.json(data)
   } catch {
     return NextResponse.json({ posts: [] })
   }
@@ -22,6 +28,7 @@ export async function POST(req: NextRequest) {
       VALUES (${slug}, ${title}, ${excerpt || ""}, ${new Date().toISOString().slice(0, 10)}, ${toPgArray(tags || [])}, ${content || ""})
       ON CONFLICT (slug) DO UPDATE SET title=EXCLUDED.title, excerpt=EXCLUDED.excerpt, tags=EXCLUDED.tags, content=EXCLUDED.content
     `
+    setCache("blog", null) // invalidate
     return NextResponse.json({ ok: true })
   } catch (e) {
     console.error("[api/blog] POST failed:", e)

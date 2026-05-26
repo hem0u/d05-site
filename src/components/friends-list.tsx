@@ -3,18 +3,22 @@
 import { useState, useEffect } from "react"
 import { ExternalLink } from "lucide-react"
 import type { Friend } from "@/data/friends"
+import { CardSkeleton } from "@/components/skeleton"
 
 export function FriendsList() {
   const [friends, setFriends] = useState<Friend[]>([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     fetch("/api/friends")
       .then((r) => r.json())
       .then((data) => setFriends(Array.isArray(data) ? data : (data.friends || [])))
       .catch(() => {})
+      .finally(() => setLoading(false))
   }, [])
 
   return (
+    loading ? <CardSkeleton count={6} /> : (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {friends.map((friend, i) => (
         <a
@@ -53,18 +57,23 @@ export function FriendsList() {
         </a>
       ))}
     </div>
+    )
   )
 }
 
 export function RandomVisit() {
   const [friends, setFriends] = useState<Friend[]>([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     fetch("/api/friends")
       .then((r) => r.json())
       .then((data) => setFriends(Array.isArray(data) ? data : (data.friends || [])))
       .catch(() => {})
+      .finally(() => setLoading(false))
   }, [])
+
+  if (loading) return null
 
   const go = () => {
     if (friends.length === 0) return

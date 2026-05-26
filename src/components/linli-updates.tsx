@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import type { ChangelogEntry } from "@/lib/changelog-db"
+import { ListSkeleton } from "@/components/skeleton"
 
 const typeConfig: Record<string, { label: string; color: string }> = {
   feat: { label: "新功能", color: "bg-emerald-500/15 text-emerald-400" },
@@ -11,17 +12,22 @@ const typeConfig: Record<string, { label: string; color: string }> = {
 
 export function LinliUpdates() {
   const [entries, setEntries] = useState<ChangelogEntry[]>([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     fetch("/api/changelog")
       .then((r) => r.json())
       .then((data) => setEntries(Array.isArray(data.entries) ? data.entries : []))
       .catch(() => {})
+      .finally(() => setLoading(false))
   }, [])
 
   return (
     <div className="space-y-0 max-h-[calc(100vh-10rem)] overflow-y-auto pr-1 scrollbar-thin">
-      {entries.map((entry, idx) => {
+      {loading ? (
+        <ListSkeleton count={5} />
+      ) : (
+        entries.map((entry, idx) => {
         const config = typeConfig[entry.type] ?? typeConfig.update
         return (
           <div
@@ -45,7 +51,8 @@ export function LinliUpdates() {
             <p className="text-xs text-muted-foreground/70 leading-relaxed">{entry.content}</p>
           </div>
         )
-      })}
+      })
+      )}
     </div>
   )
 }

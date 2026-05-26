@@ -1,10 +1,16 @@
 import { NextRequest, NextResponse } from "next/server"
 import { isAdmin } from "@/lib/auth"
 import { getFriends, addFriend, deleteFriend } from "@/lib/friends-db"
+import { getCached, setCache } from "@/lib/api-cache"
 
 export async function GET() {
+  const cached = getCached<{ friends: unknown[] }>("friends")
+  if (cached) return NextResponse.json(cached)
+
   const friends = await getFriends()
-  return NextResponse.json({ friends })
+  const data = { friends }
+  setCache("friends", data)
+  return NextResponse.json(data)
 }
 
 export async function POST(req: NextRequest) {
@@ -16,6 +22,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "name and url required" }, { status: 400 })
     }
     await addFriend(body)
+    setCache("friends", null)
     return NextResponse.json({ ok: true })
   } catch (e) {
     return NextResponse.json({ error: "Failed" }, { status: 500 })
@@ -29,6 +36,7 @@ export async function DELETE(req: NextRequest) {
     const name = req.nextUrl.searchParams.get("name")
     if (!name) return NextResponse.json({ error: "name required" }, { status: 400 })
     await deleteFriend(name)
+    setCache("friends", null)
     return NextResponse.json({ ok: true })
   } catch (e) {
     return NextResponse.json({ error: "Failed" }, { status: 500 })

@@ -3,20 +3,26 @@
 import { useState, useEffect } from "react"
 import { ExternalLink } from "lucide-react"
 import type { Friend } from "@/data/friends"
+import { ListSkeleton } from "@/components/skeleton"
 
 export function LinliFriends() {
   const [friends, setFriends] = useState<Friend[]>([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     fetch("/api/friends")
       .then((r) => r.json())
       .then((data) => setFriends(Array.isArray(data) ? data : (data.friends || [])))
       .catch(() => {})
+      .finally(() => setLoading(false))
   }, [])
 
   return (
     <div className="space-y-3 max-h-[calc(100vh-10rem)] overflow-y-auto pr-1 scrollbar-thin">
-      {friends.map((friend, idx) => (
+      {loading ? (
+        <ListSkeleton count={5} />
+      ) : (
+        friends.map((friend, idx) => (
         <a
           key={friend.name}
           href={friend.url}
@@ -40,7 +46,8 @@ export function LinliFriends() {
             <p className="text-[10px] text-muted-foreground/50 truncate mt-0.5">{friend.description}</p>
           </div>
         </a>
-      ))}
+      ))
+      )}
     </div>
   )
 }
