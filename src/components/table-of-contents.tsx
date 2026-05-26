@@ -37,7 +37,7 @@ export function TableOfContents({ headings }: { headings: TocHeading[] }) {
         <span className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/50">目录</span>
         <div className="flex-1 h-px bg-gradient-to-r from-[hsl(var(--ark-amber)/0.3)] to-transparent ml-1" />
       </div>
-      <ul className="space-y-0.5 border-l border-[hsl(var(--ark-amber)/0.12)]">
+      <ul className="list-none space-y-0.5 border-l border-[hsl(var(--ark-amber)/0.12)]">
         {headings.map((h) => (
           <li key={h.id}>
             <a
