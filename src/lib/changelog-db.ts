@@ -8,6 +8,7 @@ export type ChangelogEntry = {
 }
 
 const fallback: ChangelogEntry[] = [
+  { id: 31, date: "2026-05-26", type: "fix", content: "修复日程管理中已有日程时点击「新日程」无反应的问题（表单显示条件错误限制为仅空列表）" },
   { id: 30, date: "2026-05-26", type: "fix", content: "修复日程管理页面不显示数据的问题（API 返回格式不统一导致 admin 和日历组件解析失败）" },
   { id: 29, date: "2026-05-26", type: "feat", content: "仪表盘新增图表统计：内容分布饼图、月度文章柱状图、用户注册趋势面积图" },
   { id: 28, date: "2026-05-26", type: "fix", content: "记录页改为文字在上图片在下，图片容器改为正方形比例避免裁切" },

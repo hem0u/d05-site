@@ -514,7 +514,7 @@ export default function AdminPage() {
               {schedules.length === 0 && <p className="text-xs text-muted-foreground/30 py-8 text-center">暂无日程</p>}
             </div>
 
-            {(scheduleEditDate !== null || (scheduleForm.date && !scheduleEditDate && schedules.length === 0)) && (
+            {(scheduleEditDate !== null || scheduleForm.date) && (
               <div className="p-4 rounded-xl border border-border/20 bg-muted/5 space-y-3">
                 <h3 className="text-sm font-bold">{scheduleEditDate ? "编辑日程" : "新日程"}</h3>
                 <input value={scheduleForm.date} onChange={(e) => setScheduleForm({ ...scheduleForm, date: e.target.value })} placeholder="日期" className={inputClass} />
