@@ -132,20 +132,30 @@ function slugify(text: string): string {
 
 function extractHeadings(md: string): TocHeading[] {
   const headings: TocHeading[] = []
+  let inCodeBlock = false
   for (const line of md.split("\n")) {
-    if (line.startsWith("#### ")) {
-      const text = line.slice(5).replace(/\*\*/g, "").replace(/`/g, "")
-      headings.push({ id: slugify(text), text, level: 4 })
-    } else if (line.startsWith("### ")) {
-      const text = line.slice(4).replace(/\*\*/g, "").replace(/`/g, "")
-      headings.push({ id: slugify(text), text, level: 3 })
-    } else if (line.startsWith("## ")) {
-      const text = line.slice(3).replace(/\*\*/g, "").replace(/`/g, "")
-      headings.push({ id: slugify(text), text, level: 2 })
-    } else if (line.startsWith("# ")) {
-      const text = line.slice(2).replace(/\*\*/g, "").replace(/`/g, "")
-      headings.push({ id: slugify(text), text, level: 1 })
+    // Skip code blocks
+    if (line.trimStart().startsWith("```")) {
+      inCodeBlock = !inCodeBlock
+      continue
     }
+    if (inCodeBlock) continue
+
+    const headingMatch =
+      line.startsWith("#### ") ? { text: line.slice(5), level: 4 as const } :
+      line.startsWith("### ") ? { text: line.slice(4), level: 3 as const } :
+      line.startsWith("## ") ? { text: line.slice(3), level: 2 as const } :
+      line.startsWith("# ") ? { text: line.slice(2), level: 1 as const } :
+      null
+
+    if (!headingMatch) continue
+
+    const raw = headingMatch.text.replace(/\*\*/g, "").replace(/`/g, "")
+    // Skip headings that look like list items
+    if (/^\d+[\.\)、]/.test(raw)) continue
+    if (/^[-\*] /.test(raw)) continue
+
+    headings.push({ id: slugify(raw), text: raw, level: headingMatch.level })
   }
   return headings
 }
