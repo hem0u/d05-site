@@ -20,15 +20,13 @@ export async function POST(req: NextRequest) {
     if (!content) return NextResponse.json({ error: "content required" }, { status: 400 })
 
     const userId = await getCurrentUserId()
-    let name: string
-    if (userId) {
-      const user = await getUserById(userId)
-      name = user?.name || "匿名"
-    } else {
-      name = body.name?.trim() || "匿名"
+    if (!userId) {
+      return NextResponse.json({ error: "请先登录" }, { status: 401 })
     }
+    const user = await getUserById(userId)
+    const name = user?.name || "匿名"
 
-    const msg = await addMessage(name, content, userId ?? undefined)
+    const msg = await addMessage(name, content, userId)
     return NextResponse.json(msg)
   } catch (e) {
     console.error("[api/guestbook] POST failed:", e)

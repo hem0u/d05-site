@@ -11,33 +11,13 @@ type Message = {
   createdAt: string
 }
 
-const STORAGE_KEY = "d05-guestbook-msgs-v3"
-
-const seedMessages: Message[] = [
-  { id: "seed-1", name: "路人甲", content: "网站好漂亮！Arknights的配色真的很舒服~", createdAt: "2026-05-20" },
-  { id: "seed-2", name: "匿名博士", content: "路过踩踩，交换友链吗？", createdAt: "2026-05-18" },
-]
-
-function loadLocal(): Message[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    if (raw) return JSON.parse(raw)
-  } catch { /* ignore */ }
-  return [...seedMessages]
-}
-
-function saveLocal(msgs: Message[]) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(msgs))
-}
-
 export function LinliGuestbook() {
   const [messages, setMessages] = useState<Message[]>([])
-  const [name, setName] = useState("")
   const [text, setText] = useState("")
   const [sending, setSending] = useState(false)
-  const [useApi, setUseApi] = useState(true)
   const [loggedIn, setLoggedIn] = useState(false)
   const [userName, setUserName] = useState("")
+  const [loadingAuth, setLoadingAuth] = useState(true)
 
   useEffect(() => {
     fetch("/api/auth/me")
@@ -49,6 +29,7 @@ export function LinliGuestbook() {
         }
       })
       .catch(() => {})
+      .finally(() => setLoadingAuth(false))
   }, [])
 
   const fetchMessages = useCallback(async () => {
@@ -64,89 +45,70 @@ export function LinliGuestbook() {
             content: String(m.content ?? ""),
             createdAt: String(m.createdAt ?? ""),
           })))
-          return
         }
       }
-    } catch { /* fall through */ }
-    setUseApi(false)
-    setMessages(loadLocal())
+    } catch { /* ignore */ }
   }, [])
 
   useEffect(() => { fetchMessages() }, [fetchMessages])
 
   const submit = async () => {
     if (!text.trim()) return
-    if (!loggedIn && !name.trim()) return
     setSending(true)
-    if (useApi) {
-      try {
-        const body: Record<string, string> = { content: text.trim() }
-        if (!loggedIn) body.name = name.trim()
-        const res = await fetch("/api/guestbook", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(body),
-        })
-        if (res.ok) {
-          setName("")
-          setText("")
-          await fetchMessages()
-          setSending(false)
-          return
-        }
-      } catch { /* fallback */ }
-    }
-    // Local fallback
-    const displayName = loggedIn ? userName : name.trim()
-    const msg: Message = { id: Date.now(), name: displayName, content: text.trim(), createdAt: new Date().toISOString().slice(0, 10) }
-    const updated = [msg, ...messages]
-    setMessages(updated)
-    saveLocal(updated)
-    setName("")
-    setText("")
+    try {
+      const res = await fetch("/api/guestbook", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: text.trim() }),
+      })
+      if (res.ok) {
+        setText("")
+        await fetchMessages()
+      }
+    } catch { /* ignore */ }
     setSending(false)
   }
 
   return (
     <div className="space-y-4">
       {/* Form */}
-      <div className="space-y-2">
-        {loggedIn ? (
+      {loadingAuth ? (
+        <div className="w-4 h-4 rounded-full border-2 border-border border-t-transparent animate-spin mx-auto" />
+      ) : !loggedIn ? (
+        <div className="text-center py-6">
+          <p className="text-xs text-muted-foreground/40 mb-3">登录后才能留言</p>
+          <Link
+            href="/login"
+            className="inline-flex items-center gap-1 px-4 py-1.5 text-xs tracking-wider rounded-lg bg-[hsl(var(--ark-amber)/0.15)] text-[hsl(var(--ark-amber))] hover:bg-[hsl(var(--ark-amber)/0.25)] transition-colors"
+          >
+            去登录
+          </Link>
+        </div>
+      ) : (
+        <div className="space-y-2">
           <p className="text-[10px] text-muted-foreground/50">
             以 <span className="text-[hsl(var(--ark-amber))]">{userName}</span> 的身份留言
           </p>
-        ) : (
-          <input
-            value={name}
-            onChange={(e) => setName(e.target.value.slice(0, 20))}
-            placeholder="昵称"
-            className="w-full px-3 py-1.5 text-xs bg-muted/30 border border-border/20 rounded-lg outline-none focus:border-[hsl(var(--ark-amber)/0.3)] transition-colors"
+          <textarea
+            value={text}
+            onChange={(e) => setText(e.target.value.slice(0, 200))}
+            placeholder="说点什么..."
+            rows={2}
+            className="w-full px-3 py-1.5 text-xs bg-muted/30 border border-border/20 rounded-lg resize-none outline-none focus:border-[hsl(var(--ark-amber)/0.3)] transition-colors"
           />
-        )}
-        <textarea
-          value={text}
-          onChange={(e) => setText(e.target.value.slice(0, 200))}
-          placeholder="说点什么..."
-          rows={2}
-          className="w-full px-3 py-1.5 text-xs bg-muted/30 border border-border/20 rounded-lg resize-none outline-none focus:border-[hsl(var(--ark-amber)/0.3)] transition-colors"
-        />
-        <div className="flex items-center justify-between">
-          <span className="text-[10px] text-muted-foreground/40">{text.length}/200</span>
-          <button
-            onClick={submit}
-            disabled={(!loggedIn && !name.trim()) || !text.trim() || sending}
-            className="inline-flex items-center gap-1 px-3 py-1 text-[10px] tracking-wider rounded-full border border-border/30 text-muted-foreground/60 hover:text-[hsl(var(--ark-amber))] hover:border-[hsl(var(--ark-amber)/0.4)] transition-all disabled:opacity-20"
-          >
-            <Send className="h-2.5 w-2.5" />
-            发送
-          </button>
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] text-muted-foreground/40">{text.length}/200</span>
+            <button
+              onClick={submit}
+              disabled={!text.trim() || sending}
+              className="inline-flex items-center gap-1 px-3 py-1 text-[10px] tracking-wider rounded-full border border-border/30 text-muted-foreground/60 hover:text-[hsl(var(--ark-amber))] hover:border-[hsl(var(--ark-amber)/0.4)] transition-all disabled:opacity-20"
+            >
+              <Send className="h-2.5 w-2.5" />
+              发送
+            </button>
+          </div>
         </div>
-        {!loggedIn && (
-          <p className="text-[10px] text-muted-foreground/30">
-            登录后可直接使用账号昵称留言，无需手动填写 <Link href="/login" className="text-[hsl(var(--ark-amber))] hover:underline">去登录</Link>
-          </p>
-        )}
-      </div>
+      )}
 
       {/* Messages */}
       <div className="space-y-2 max-h-[calc(100vh-16rem)] overflow-y-auto pr-1 scrollbar-thin">
