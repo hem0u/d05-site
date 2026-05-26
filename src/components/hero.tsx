@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { ArrowDown, Github, Mail } from "lucide-react"
+import { ArrowDown, Github, MessageSquareText } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { profile } from "@/data/profile"
 import { HexGrid, Sparkles, DriftingPetals, FloatingChibi, CornerDeco, ArkDiamond } from "@/components/decorations"
+import { FeedbackModal } from "@/components/feedback-modal"
 import { projects } from "@/data/projects"
 
 const TYPEWRITER_TEXT = profile.subtitle
@@ -119,6 +120,7 @@ export function Hero() {
   const [daysRunning, setDaysRunning] = useState(() => calcDays(profile.siteStart))
   const [latestPost, setLatestPost] = useState<{ title: string; slug: string } | null>(null)
   const [blogCount, setBlogCount] = useState(0)
+  const [feedbackOpen, setFeedbackOpen] = useState(false)
 
   useEffect(() => {
     const update = () => setDaysRunning(calcDays(profile.siteStart))
@@ -325,13 +327,9 @@ export function Hero() {
                   </a>
                 </Button>
               )}
-              {profile.social.email && (
-                <Button variant="ghost" size="icon" asChild className="rounded-full hover:text-[hsl(var(--ark-amber))] transition-all duration-300 hover:scale-110">
-                  <a href={`mailto:${profile.social.email}`}>
-                    <Mail className="h-5 w-5" />
-                  </a>
-                </Button>
-              )}
+              <Button variant="ghost" size="icon" className="rounded-full hover:text-[hsl(var(--ark-amber))] transition-all duration-300 hover:scale-110" onClick={() => setFeedbackOpen(true)}>
+                <MessageSquareText className="h-5 w-5" />
+              </Button>
             </div>
 
             {/* HUD status line */}
@@ -428,6 +426,8 @@ export function Hero() {
           100% { transform: rotate(360deg); }
         }
       `}</style>
+
+      <FeedbackModal open={feedbackOpen} onClose={() => setFeedbackOpen(false)} />
     </section>
   )
 }

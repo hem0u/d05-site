@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
-import { Github, Mail } from "lucide-react"
+import { Github, MessageSquareText } from "lucide-react"
 import { ArkDiamond } from "@/components/decorations"
+import { FeedbackModal } from "@/components/feedback-modal"
 import { profile } from "@/data/profile"
 
 const QUOTES = [
@@ -26,6 +27,7 @@ function calcDays(siteStart: string | undefined): number {
 export function Footer() {
   const [quote, setQuote] = useState(QUOTES[0])
   const [daysOnline, setDaysOnline] = useState(() => calcDays(profile.siteStart))
+  const [feedbackOpen, setFeedbackOpen] = useState(false)
 
   useEffect(() => {
     setQuote(QUOTES[Math.floor(Math.random() * QUOTES.length)])
@@ -72,11 +74,9 @@ export function Footer() {
               </svg>
             </a>
           )}
-          {profile.social.email && (
-            <a href={`mailto:${profile.social.email}`} className="p-1.5 text-muted-foreground/40 hover:text-[hsl(var(--ark-amber))] transition-colors">
-              <Mail className="h-3.5 w-3.5" />
-            </a>
-          )}
+          <button onClick={() => setFeedbackOpen(true)} className="p-1.5 text-muted-foreground/40 hover:text-[hsl(var(--ark-amber))] transition-colors">
+            <MessageSquareText className="h-3.5 w-3.5" />
+          </button>
         </div>
 
         {/* Branding */}
@@ -108,6 +108,8 @@ export function Footer() {
           {/* Year from Date is stable across server/client for the same build */}
         </p>
       </div>
+
+      <FeedbackModal open={feedbackOpen} onClose={() => setFeedbackOpen(false)} />
     </footer>
   )
 }

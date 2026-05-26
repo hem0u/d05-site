@@ -30,6 +30,7 @@ export async function ensureTables() {
         sql`CREATE TABLE IF NOT EXISTS blog_likes (id SERIAL PRIMARY KEY, user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE, post_slug TEXT NOT NULL, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), UNIQUE(user_id, post_slug))`,
         sql`CREATE TABLE IF NOT EXISTS blog_comments (id SERIAL PRIMARY KEY, user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE, post_slug TEXT NOT NULL, content TEXT NOT NULL, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW())`,
         sql`CREATE TABLE IF NOT EXISTS blog_views (post_slug TEXT PRIMARY KEY, count INTEGER NOT NULL DEFAULT 0)`,
+        sql`CREATE TABLE IF NOT EXISTS feedbacks (id SERIAL PRIMARY KEY, content TEXT NOT NULL, contact TEXT DEFAULT NULL, type TEXT NOT NULL DEFAULT 'suggestion', created_at TIMESTAMPTZ NOT NULL DEFAULT NOW())`,
         // Migrations
         sql.query("ALTER TABLE users ADD COLUMN IF NOT EXISTS role TEXT NOT NULL DEFAULT 'user'"),
         sql.query("ALTER TABLE guestbook_messages ADD COLUMN IF NOT EXISTS user_id INTEGER"),
