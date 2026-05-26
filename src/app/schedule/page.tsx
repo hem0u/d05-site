@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { HexGrid, Sparkles, CornerDeco, ArkDiamond, SakuraFlower, YuriBloom } from "@/components/decorations"
 import { CalendarSchedule } from "@/components/calendar-schedule"
+import { NoSnapScroll } from "@/components/no-snap-scroll"
 
 export const metadata: Metadata = {
   title: "日程 — D05",
@@ -12,6 +13,7 @@ export const dynamic = "force-dynamic"
 export default function SchedulePage() {
   return (
     <div className="relative py-16 px-4 sm:px-6 overflow-hidden min-h-screen">
+      <NoSnapScroll />
       <HexGrid opacity={0.04} />
       <Sparkles count={12} />
       <CornerDeco position="tl" />
