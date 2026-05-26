@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+import { isAdmin } from "@/lib/auth"
 import { HAS_DB } from "@/lib/db"
 import { getAllDiaryEntries, saveDiaryEntry, deleteDiaryEntry } from "@/lib/diary-db"
 
@@ -9,6 +10,7 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
+  if (!await isAdmin()) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
   if (!HAS_DB) return NextResponse.json({ error: "no database" }, { status: 503 })
   const body = await req.json()
   await saveDiaryEntry(body)
@@ -16,6 +18,7 @@ export async function POST(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
+  if (!await isAdmin()) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
   if (!HAS_DB) return NextResponse.json({ error: "no database" }, { status: 503 })
   const { date } = await req.json()
   await deleteDiaryEntry(date)

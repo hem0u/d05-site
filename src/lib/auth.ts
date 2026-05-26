@@ -1,6 +1,7 @@
 import { SignJWT, jwtVerify } from "jose"
 import { cookies } from "next/headers"
 import bcrypt from "bcryptjs"
+import { sql } from "@/lib/db"
 
 const JWT_SECRET = new TextEncoder().encode(
   process.env.JWT_SECRET || "d05-dev-secret-change-in-production-min-32-chars!!"
@@ -57,4 +58,20 @@ export async function getCurrentUserId(): Promise<number | null> {
   const token = await getAuthToken()
   if (!token) return null
   return verifyToken(token)
+}
+
+export async function getCurrentUserRole(): Promise<string | null> {
+  const userId = await getCurrentUserId()
+  if (!userId) return null
+  try {
+    const { rows } = await sql`SELECT role FROM users WHERE id = ${userId}`
+    return rows.length > 0 ? rows[0].role : null
+  } catch {
+    return null
+  }
+}
+
+export async function isAdmin(): Promise<boolean> {
+  const role = await getCurrentUserRole()
+  return role === "admin"
 }

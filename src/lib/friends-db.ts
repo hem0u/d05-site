@@ -12,3 +12,15 @@ export async function getFriends(): Promise<Friend[]> {
     return fallback
   }
 }
+
+export async function addFriend(friend: Friend) {
+  await sql`
+    INSERT INTO friends (name, url, description, avatar)
+    VALUES (${friend.name}, ${friend.url}, ${friend.description}, ${friend.avatar || null})
+    ON CONFLICT (name) DO UPDATE SET url = EXCLUDED.url, description = EXCLUDED.description, avatar = EXCLUDED.avatar
+  `
+}
+
+export async function deleteFriend(name: string) {
+  await sql`DELETE FROM friends WHERE name = ${name}`
+}

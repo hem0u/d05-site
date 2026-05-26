@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+import { isAdmin } from "@/lib/auth"
 import { HAS_DB, sql, ensureTables } from "@/lib/db"
 
 let tablesEnsured = false
@@ -23,6 +24,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  if (!await isAdmin()) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
   await ensure()
   if (!HAS_DB) return NextResponse.json({ error: "no database" }, { status: 503 })
   const { date, content } = await req.json()
@@ -36,6 +38,7 @@ export async function POST(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
+  if (!await isAdmin()) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
   await ensure()
   if (!HAS_DB) return NextResponse.json({ error: "no database" }, { status: 503 })
   const { date } = await req.json()

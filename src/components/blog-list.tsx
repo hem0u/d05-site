@@ -2,9 +2,8 @@
 
 import { useState, useMemo } from "react"
 import { useRouter } from "next/navigation"
-import { Search, ChevronLeft, ChevronRight, Plus } from "lucide-react"
+import { Search, ChevronLeft, ChevronRight } from "lucide-react"
 import { BlogCard } from "@/components/blog-card"
-import { BlogEditor } from "@/components/blog-editor"
 import type { BlogPost } from "@/data/blog-posts"
 
 const PAGE_SIZE = 4
@@ -14,7 +13,6 @@ export function BlogList({ posts: blogPosts }: { posts: BlogPost[] }) {
   const [activeTag, setActiveTag] = useState<string | null>(null)
   const [query, setQuery] = useState("")
   const [page, setPage] = useState(1)
-  const [editing, setEditing] = useState(false)
 
   const allTags = useMemo(
     () => Array.from(new Set(blogPosts.flatMap((p) => p.tags))).sort(),
@@ -106,14 +104,6 @@ export function BlogList({ posts: blogPosts }: { posts: BlogPost[] }) {
           ))}
         </div>
 
-        {/* Write button — pushed to the right on desktop */}
-        <button
-          onClick={() => setEditing(true)}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] tracking-widest uppercase rounded-full border border-border/40 text-muted-foreground/70 hover:text-[hsl(var(--ark-amber))] hover:border-[hsl(var(--ark-amber)/0.5)] transition-all sm:ml-auto"
-        >
-          <Plus className="h-3 w-3" />
-          写文章
-        </button>
       </div>
 
       {/* Results */}
@@ -195,12 +185,6 @@ export function BlogList({ posts: blogPosts }: { posts: BlogPost[] }) {
         </>
       )}
 
-      {editing && (
-        <BlogEditor
-          onClose={() => setEditing(false)}
-          onSaved={() => router.refresh()}
-        />
-      )}
     </>
   )
 }

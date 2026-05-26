@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { hashPassword, signToken, setAuthCookie } from "@/lib/auth"
 import { createUser, getUserByEmail, verifyCode } from "@/lib/user-db"
-import { ensureTables } from "@/lib/db"
+import { ensureTables, sql } from "@/lib/db"
 
 export async function POST(req: NextRequest) {
   try {
@@ -38,6 +38,13 @@ export async function POST(req: NextRequest) {
 
     if (!user) {
       return NextResponse.json({ error: "注册失败，请重试" }, { status: 500 })
+    }
+
+    // First user becomes admin
+    const { rows: countRows } = await sql`SELECT count(*) as c FROM users`
+    if (Number(countRows[0].c) === 1) {
+      await sql`UPDATE users SET role = 'admin' WHERE id = ${user.id}`
+      user.role = "admin"
     }
 
     const token = await signToken({ userId: user.id })

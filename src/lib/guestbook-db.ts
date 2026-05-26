@@ -24,10 +24,11 @@ export async function getMessages(): Promise<GuestbookMessage[]> {
   }
 }
 
-export async function addMessage(name: string, content: string): Promise<GuestbookMessage> {
+export async function addMessage(name: string, content: string, userId?: number): Promise<GuestbookMessage> {
   try {
     const { rows } = await sql`
-      INSERT INTO guestbook_messages (name, content) VALUES (${name}, ${content})
+      INSERT INTO guestbook_messages (name, content, user_id)
+      VALUES (${name}, ${content}, ${userId ?? null})
       RETURNING id, name, content, created_at as "createdAt"
     `
     return {
@@ -39,4 +40,8 @@ export async function addMessage(name: string, content: string): Promise<Guestbo
   } catch {
     return { id: 0, name, content, createdAt: new Date().toISOString() }
   }
+}
+
+export async function deleteMessage(id: number) {
+  await sql`DELETE FROM guestbook_messages WHERE id = ${id}`
 }

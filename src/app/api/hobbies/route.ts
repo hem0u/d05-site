@@ -1,7 +1,19 @@
 import { NextRequest, NextResponse } from "next/server"
+import { isAdmin } from "@/lib/auth"
 import { HAS_DB, sql } from "@/lib/db"
 
+export async function GET() {
+  if (!HAS_DB) return NextResponse.json({ hobbies: [] })
+  try {
+    const { rows } = await sql`SELECT id, name, category, brief, detail, image FROM hobbies ORDER BY category, name`
+    return NextResponse.json({ hobbies: rows })
+  } catch {
+    return NextResponse.json({ hobbies: [] })
+  }
+}
+
 export async function POST(req: NextRequest) {
+  if (!await isAdmin()) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
   if (!HAS_DB) return NextResponse.json({ error: "no database" }, { status: 503 })
   const { id, name, category, brief, detail, image } = await req.json()
   if (!id || !name) return NextResponse.json({ error: "id and name required" }, { status: 400 })

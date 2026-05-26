@@ -43,6 +43,7 @@ export async function ensureTables() {
       id SERIAL PRIMARY KEY,
       name TEXT NOT NULL,
       content TEXT NOT NULL,
+      user_id INTEGER,
       created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     )
   `
@@ -82,6 +83,7 @@ export async function ensureTables() {
       password_hash TEXT NOT NULL,
       avatar TEXT DEFAULT NULL,
       bio TEXT DEFAULT '',
+      role TEXT NOT NULL DEFAULT 'user',
       created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     )
   `

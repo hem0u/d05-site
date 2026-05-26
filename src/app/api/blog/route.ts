@@ -1,8 +1,19 @@
 import { NextRequest, NextResponse } from "next/server"
+import { isAdmin } from "@/lib/auth"
 import { sql } from "@/lib/db"
 import { toPgArray } from "@/lib/utils"
 
+export async function GET() {
+  try {
+    const { rows } = await sql`SELECT slug, title, excerpt, date, tags, content FROM blog_posts ORDER BY date DESC`
+    return NextResponse.json({ posts: rows })
+  } catch {
+    return NextResponse.json({ posts: [] })
+  }
+}
+
 export async function POST(req: NextRequest) {
+  if (!await isAdmin()) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
   try {
     const { slug, title, excerpt, tags, content } = await req.json()
     if (!slug || !title) return NextResponse.json({ error: "slug and title required" }, { status: 400 })

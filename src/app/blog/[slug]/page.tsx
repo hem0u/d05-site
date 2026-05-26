@@ -10,7 +10,6 @@ import { HexGrid, Sparkles, CornerDeco, ArkDiamond } from "@/components/decorati
 import { ReadingProgress } from "@/components/reading-progress"
 import { CodeBlock } from "@/components/code-block"
 import { TableOfContents, type TocHeading } from "@/components/table-of-contents"
-import { PostActions } from "@/components/post-actions"
 import { NoSnapScroll } from "@/components/no-snap-scroll"
 import { LikeButton, ViewCounter, BlogComments } from "@/components/blog-interactions"
 import { highlightCode } from "@/lib/highlight"
@@ -62,12 +61,9 @@ export default async function BlogPostPage({ params }: Props) {
             </Link>
 
         <header className="mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3 text-sm text-muted-foreground">
-              <Calendar className="h-4 w-4" />
-              <time dateTime={post.date}>{post.date}</time>
-            </div>
-            <PostActions post={post} />
+          <div className="flex items-center gap-3 text-sm text-muted-foreground mb-4">
+            <Calendar className="h-4 w-4" />
+            <time dateTime={post.date}>{post.date}</time>
           </div>
           <h1 className="font-display text-3xl sm:text-4xl font-bold mb-4">
             {post.title}

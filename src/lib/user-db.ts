@@ -6,13 +6,14 @@ export type User = {
   name: string
   avatar: string | null
   bio: string
+  role: string
   createdAt: string
 }
 
 export async function getUserById(id: number): Promise<User | null> {
   try {
     const { rows } = await sql`
-      SELECT id, email, name, avatar, bio, created_at as "createdAt"
+      SELECT id, email, name, avatar, bio, role, created_at as "createdAt"
       FROM users WHERE id = ${id}
     `
     if (rows.length === 0) return null
@@ -22,6 +23,7 @@ export async function getUserById(id: number): Promise<User | null> {
       name: rows[0].name,
       avatar: rows[0].avatar,
       bio: rows[0].bio,
+      role: rows[0].role,
       createdAt: rows[0].createdAt.toISOString(),
     }
   } catch (e) {
@@ -33,7 +35,7 @@ export async function getUserById(id: number): Promise<User | null> {
 export async function getUserByEmail(email: string): Promise<User | null> {
   try {
     const { rows } = await sql`
-      SELECT id, email, name, avatar, bio, created_at as "createdAt"
+      SELECT id, email, name, avatar, bio, role, created_at as "createdAt"
       FROM users WHERE email = ${email.toLowerCase()}
     `
     if (rows.length === 0) return null
@@ -43,6 +45,7 @@ export async function getUserByEmail(email: string): Promise<User | null> {
       name: rows[0].name,
       avatar: rows[0].avatar,
       bio: rows[0].bio,
+      role: rows[0].role,
       createdAt: rows[0].createdAt.toISOString(),
     }
   } catch (e) {
@@ -64,6 +67,7 @@ export async function createUser(email: string, name: string, passwordHash: stri
       name: rows[0].name,
       avatar: rows[0].avatar,
       bio: rows[0].bio,
+      role: rows[0].role,
       createdAt: rows[0].createdAt.toISOString(),
     }
   } catch (e) {
@@ -108,6 +112,7 @@ export async function updateProfile(
       name: rows[0].name,
       avatar: rows[0].avatar,
       bio: rows[0].bio,
+      role: rows[0].role,
       createdAt: rows[0].createdAt.toISOString(),
     }
   } catch (e) {

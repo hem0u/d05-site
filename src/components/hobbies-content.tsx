@@ -1,13 +1,8 @@
 "use client"
 
-"use client"
-
 import { useState, useEffect, useCallback } from "react"
-import { useRouter } from "next/navigation"
-import { Plus } from "lucide-react"
 import type { Hobby } from "@/data/hobbies"
 import { HexGrid, Sparkles, CornerDeco, ArkDiamond, SakuraFlower, YuriBloom } from "@/components/decorations"
-import { HobbyEditor } from "@/components/hobby-editor"
 
 function getCardRects() {
   const cards = document.querySelectorAll<HTMLElement>("[data-hobby-id]")
@@ -25,9 +20,6 @@ export function HobbiesContent({ hobbies, categories }: { hobbies: Hobby[]; cate
   const [closing, setClosing] = useState(false)
   const [flyRect, setFlyRect] = useState<DOMRect | null>(null)
   const [activeCategory, setActiveCategory] = useState("全部")
-  const [editing, setEditing] = useState(false)
-  const router = useRouter()
-
   const filteredHobbies = activeCategory === "全部"
     ? hobbies
     : hobbies.filter((h) => h.category === activeCategory)
@@ -132,15 +124,8 @@ export function HobbiesContent({ hobbies, categories }: { hobbies: Hobby[]; cate
 
           {/* Card grid */}
           <div className="flex-1 min-w-0">
-            <div className="flex items-center justify-between mb-4">
+            <div className="mb-4">
               <span className="text-[10px] text-muted-foreground/30 tracking-wider">{filteredHobbies.length} 件</span>
-              <button
-                onClick={() => setEditing(true)}
-                className="inline-flex items-center gap-1 px-3 py-1 text-[10px] tracking-widest uppercase rounded-full border border-border/30 text-muted-foreground/50 hover:text-[hsl(var(--ark-amber))] hover:border-[hsl(var(--ark-amber)/0.4)] transition-all"
-              >
-                <Plus className="h-3 w-3" />
-                添加
-              </button>
             </div>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {filteredHobbies.map((h) => {
@@ -192,14 +177,6 @@ export function HobbiesContent({ hobbies, categories }: { hobbies: Hobby[]; cate
           <ArkDiamond size={6} />
         </div>
       </div>
-
-      {/* Add/Edit modal */}
-      {editing && (
-        <HobbyEditor
-          onClose={() => setEditing(false)}
-          onSaved={() => { setEditing(false); router.refresh() }}
-        />
-      )}
 
       {/* ── Expanded overlay ── */}
       {expanded && (
