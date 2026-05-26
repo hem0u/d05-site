@@ -163,7 +163,58 @@ export default function ProfilePage() {
       <div className="relative z-10 mx-auto max-w-2xl space-y-8">
         {/* Profile Card */}
         <div className="p-6 rounded-2xl border border-border/20 bg-card/80 backdrop-blur-xl">
-          {editing ? (
+          {pwEditing ? (
+            <div className="space-y-4">
+              <h2 className="font-serif text-lg font-bold">修改密码</h2>
+              <p className="text-[11px] text-muted-foreground/50">验证码将发送至 {user.email}</p>
+              <div>
+                <label className="text-xs text-muted-foreground mb-1 block">新密码</label>
+                <input
+                  type="password"
+                  value={pwNew}
+                  onChange={(e) => setPwNew(e.target.value)}
+                  placeholder="至少6位"
+                  className="w-full px-3 py-2 text-sm bg-muted/30 border border-border/20 rounded-lg outline-none focus:border-[hsl(var(--ark-amber)/0.3)]"
+                />
+              </div>
+              <div>
+                <label className="text-xs text-muted-foreground mb-1 block">验证码</label>
+                <div className="flex gap-2">
+                  <input
+                    value={pwCode}
+                    onChange={(e) => setPwCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                    placeholder="6位数字"
+                    className="flex-1 px-3 py-2 text-sm bg-muted/30 border border-border/20 rounded-lg outline-none focus:border-[hsl(var(--ark-amber)/0.3)]"
+                  />
+                  <button
+                    onClick={sendCode}
+                    disabled={pwSending}
+                    className="px-3 py-2 text-xs tracking-wider rounded-lg border border-border/20 text-muted-foreground hover:text-[hsl(var(--ark-amber))] hover:border-[hsl(var(--ark-amber)/0.3)] transition-colors whitespace-nowrap disabled:opacity-40"
+                  >
+                    {pwSending ? "发送中..." : "发送验证码"}
+                  </button>
+                </div>
+              </div>
+              {pwMsg && (
+                <p className={`text-xs ${pwMsg.includes("成功") ? "text-emerald-400" : "text-amber-400"}`}>{pwMsg}</p>
+              )}
+              <div className="flex gap-2">
+                <button
+                  onClick={changePassword}
+                  disabled={pwSaving || pwCode.length < 6 || pwNew.length < 6}
+                  className="px-4 py-1.5 text-xs tracking-wider rounded-lg bg-[hsl(var(--ark-amber)/0.15)] text-[hsl(var(--ark-amber))] hover:bg-[hsl(var(--ark-amber)/0.25)] transition-colors disabled:opacity-30"
+                >
+                  {pwSaving ? "修改中..." : "确认修改"}
+                </button>
+                <button
+                  onClick={() => { setPwEditing(false); setPwMsg(""); setPwCode(""); setPwNew("") }}
+                  className="px-4 py-1.5 text-xs tracking-wider rounded-lg border border-border/20 text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  取消
+                </button>
+              </div>
+            </div>
+          ) : editing ? (
             <div className="space-y-4">
               <h2 className="font-serif text-lg font-bold">编辑资料</h2>
               <div>
@@ -252,6 +303,13 @@ export default function ProfilePage() {
                   编辑资料
                 </button>
                 <button
+                  onClick={() => setPwEditing(true)}
+                  className="inline-flex items-center gap-1 px-3 py-1.5 text-xs tracking-wider rounded-lg border border-border/20 text-muted-foreground hover:text-[hsl(var(--ark-amber))] hover:border-[hsl(var(--ark-amber)/0.3)] transition-colors"
+                >
+                  <Lock className="h-3 w-3" />
+                  修改密码
+                </button>
+                <button
                   onClick={logout}
                   className="inline-flex items-center gap-1 px-3 py-1.5 text-xs tracking-wider rounded-lg border border-border/20 text-muted-foreground hover:text-red-400 hover:border-red-400/30 transition-colors"
                 >
@@ -260,70 +318,6 @@ export default function ProfilePage() {
                 </button>
               </div>
             </div>
-          )}
-        </div>
-
-        {/* Password Change */}
-        <div className="p-6 rounded-2xl border border-border/20 bg-card/80 backdrop-blur-xl">
-          {pwEditing ? (
-            <div className="space-y-4">
-              <h2 className="font-serif text-lg font-bold">修改密码</h2>
-              <p className="text-[11px] text-muted-foreground/50">验证码将发送至 {user.email}</p>
-              <div>
-                <label className="text-xs text-muted-foreground mb-1 block">新密码</label>
-                <input
-                  type="password"
-                  value={pwNew}
-                  onChange={(e) => setPwNew(e.target.value)}
-                  placeholder="至少6位"
-                  className="w-full px-3 py-2 text-sm bg-muted/30 border border-border/20 rounded-lg outline-none focus:border-[hsl(var(--ark-amber)/0.3)]"
-                />
-              </div>
-              <div>
-                <label className="text-xs text-muted-foreground mb-1 block">验证码</label>
-                <div className="flex gap-2">
-                  <input
-                    value={pwCode}
-                    onChange={(e) => setPwCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
-                    placeholder="6位数字"
-                    className="flex-1 px-3 py-2 text-sm bg-muted/30 border border-border/20 rounded-lg outline-none focus:border-[hsl(var(--ark-amber)/0.3)]"
-                  />
-                  <button
-                    onClick={sendCode}
-                    disabled={pwSending}
-                    className="px-3 py-2 text-xs tracking-wider rounded-lg border border-border/20 text-muted-foreground hover:text-[hsl(var(--ark-amber))] hover:border-[hsl(var(--ark-amber)/0.3)] transition-colors whitespace-nowrap disabled:opacity-40"
-                  >
-                    {pwSending ? "发送中..." : "发送验证码"}
-                  </button>
-                </div>
-              </div>
-              {pwMsg && (
-                <p className={`text-xs ${pwMsg.includes("成功") ? "text-emerald-400" : "text-amber-400"}`}>{pwMsg}</p>
-              )}
-              <div className="flex gap-2">
-                <button
-                  onClick={changePassword}
-                  disabled={pwSaving || pwCode.length < 6 || pwNew.length < 6}
-                  className="px-4 py-1.5 text-xs tracking-wider rounded-lg bg-[hsl(var(--ark-amber)/0.15)] text-[hsl(var(--ark-amber))] hover:bg-[hsl(var(--ark-amber)/0.25)] transition-colors disabled:opacity-30"
-                >
-                  {pwSaving ? "修改中..." : "确认修改"}
-                </button>
-                <button
-                  onClick={() => { setPwEditing(false); setPwMsg(""); setPwCode(""); setPwNew("") }}
-                  className="px-4 py-1.5 text-xs tracking-wider rounded-lg border border-border/20 text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  取消
-                </button>
-              </div>
-            </div>
-          ) : (
-            <button
-              onClick={() => setPwEditing(true)}
-              className="inline-flex items-center gap-1 px-3 py-1.5 text-xs tracking-wider rounded-lg border border-border/20 text-muted-foreground hover:text-[hsl(var(--ark-amber))] hover:border-[hsl(var(--ark-amber)/0.3)] transition-colors"
-            >
-              <Lock className="h-3 w-3" />
-              修改密码
-            </button>
           )}
         </div>
 
