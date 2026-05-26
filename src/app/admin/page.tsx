@@ -39,7 +39,7 @@ export default function AdminPage() {
   const [diaryEntries, setDiaryEntries] = useState<any[]>([])
   const [diaryEditing, setDiaryEditing] = useState<any | null>(null)
   const [diaryNew, setDiaryNew] = useState(false)
-  const [diaryForm, setDiaryForm] = useState({ date: "", content: "", photos: "" })
+  const [diaryForm, setDiaryForm] = useState<{ date: string; content: string; photos: string[] }>({ date: "", content: "", photos: [] })
 
   // Schedule state
   const [schedules, setSchedules] = useState<any[]>([])
@@ -70,6 +70,31 @@ export default function AdminPage() {
   const toast = (text: string) => {
     setMsg(text)
     setTimeout(() => setMsg(""), 2000)
+  }
+
+  const handleDiaryPhoto = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files
+    if (!files) return
+    Array.from(files).forEach((file) => {
+      const canvas = document.createElement("canvas")
+      canvas.width = 400; canvas.height = 400
+      const ctx = canvas.getContext("2d")
+      if (!ctx) return
+      const img = new Image()
+      img.onload = () => {
+        const size = Math.min(img.width, img.height)
+        const sx = (img.width - size) / 2; const sy = (img.height - size) / 2
+        ctx.drawImage(img, sx, sy, size, size, 0, 0, 400, 400)
+        const dataUrl = canvas.toDataURL("image/jpeg", 0.75)
+        setDiaryForm((prev) => ({ ...prev, photos: [...prev.photos, dataUrl] }))
+      }
+      img.src = URL.createObjectURL(file)
+    })
+    e.target.value = ""
+  }
+
+  const removeDiaryPhoto = (idx: number) => {
+    setDiaryForm((prev) => ({ ...prev, photos: prev.photos.filter((_, i) => i !== idx) }))
   }
 
   // ---- Data fetchers ----
@@ -149,11 +174,10 @@ export default function AdminPage() {
 
   // ---- Diary actions ----
   const saveDiary = async () => {
-    const photos = diaryForm.photos ? diaryForm.photos.split("\n").filter(Boolean) : []
     const res = await fetch("/api/diary", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ date: diaryForm.date, content: diaryForm.content, photos }),
+      body: JSON.stringify({ date: diaryForm.date, content: diaryForm.content, photos: diaryForm.photos }),
     })
     if (res.ok) {
       toast("已保存")
@@ -396,7 +420,7 @@ export default function AdminPage() {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h1 className="text-lg font-bold tracking-wider">记录管理</h1>
-              <button onClick={() => { setDiaryForm({ date: new Date().toISOString().slice(0, 10), content: "", photos: "" }); setDiaryNew(true) }} className={btnPrimary}>新记录</button>
+              <button onClick={() => { setDiaryForm({ date: new Date().toISOString().slice(0, 10), content: "", photos: [] }); setDiaryNew(true) }} className={btnPrimary}>新记录</button>
             </div>
 
             <div className="space-y-1">
@@ -407,7 +431,7 @@ export default function AdminPage() {
                     <span className="text-xs text-muted-foreground/50 ml-2 truncate">{e.content?.slice(0, 40)}</span>
                   </div>
                   <div className="flex gap-1 shrink-0 ml-3">
-                    <button onClick={() => { setDiaryForm({ date: e.date, content: e.content, photos: (e.photos || []).join("\n") }); setDiaryEditing(e) }} className={btnClass}>编辑</button>
+                    <button onClick={() => { setDiaryForm({ date: e.date, content: e.content, photos: e.photos || [] }); setDiaryEditing(e) }} className={btnClass}>编辑</button>
                     <button onClick={() => deleteDiary(e.date)} className={btnClass}>删除</button>
                   </div>
                 </div>
@@ -421,7 +445,37 @@ export default function AdminPage() {
                   <h2 className="font-bold text-sm">{diaryEditing ? "编辑记录" : "新记录"}</h2>
                   <input value={diaryForm.date} onChange={(e) => setDiaryForm({ ...diaryForm, date: e.target.value })} placeholder="日期 YYYY-MM-DD" className={inputClass} />
                   <textarea value={diaryForm.content} onChange={(e) => setDiaryForm({ ...diaryForm, content: e.target.value })} rows={4} placeholder="内容" className={inputClass} />
-                  <textarea value={diaryForm.photos} onChange={(e) => setDiaryForm({ ...diaryForm, photos: e.target.value })} rows={2} placeholder="图片URL，每行一个" className={inputClass} />
+                  <div className="space-y-2">
+                    <label className="text-[10px] text-muted-foreground/40">照片</label>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={handleDiaryPhoto}
+                      className="hidden"
+                      id="diary-photo-input"
+                    />
+                    <div className="flex flex-wrap gap-2">
+                      {diaryForm.photos.map((src, i) => (
+                        <div key={i} className="relative inline-block">
+                          <img src={src} alt="" className="w-16 h-16 rounded-lg object-cover border border-border/20" />
+                          <button
+                            onClick={() => removeDiaryPhoto(i)}
+                            className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-black/60 hover:bg-black/80 text-white/70 hover:text-white flex items-center justify-center text-[10px] transition-colors"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
+                      <button
+                        type="button"
+                        onClick={() => document.getElementById("diary-photo-input")?.click()}
+                        className="w-16 h-16 rounded-lg border-2 border-dashed border-border/20 hover:border-[hsl(var(--ark-amber)/0.4)] flex items-center justify-center text-muted-foreground/30 hover:text-[hsl(var(--ark-amber))] transition-all text-2xl"
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
                   <div className="flex gap-2">
                     <button onClick={saveDiary} className={btnPrimary}>保存</button>
                     <button onClick={() => { setDiaryNew(false); setDiaryEditing(null) }} className={btnClass}>取消</button>
