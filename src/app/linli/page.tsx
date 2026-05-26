@@ -5,6 +5,7 @@ import { LinliGuestbook } from "@/components/linli-guestbook"
 import { LinliUpdates } from "@/components/linli-updates"
 import { getFriends } from "@/lib/friends-db"
 import { getChangelog } from "@/lib/changelog-db"
+import { ensureTables } from "@/lib/db"
 
 export const dynamic = "force-dynamic"
 
@@ -23,6 +24,7 @@ function SectionHeader({ title, subtitle }: { title: string; subtitle: string })
 }
 
 export default async function LinliPage() {
+  await ensureTables()
   const [friends, changelog] = await Promise.all([getFriends(), getChangelog()])
 
   return (

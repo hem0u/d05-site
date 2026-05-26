@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { BlogList } from "@/components/blog-list"
 import { getBlogPosts } from "@/lib/blog-db"
+import { ensureTables } from "@/lib/db"
 import { ArkDiamond, HexGrid, Sparkles, CornerDeco, SakuraFlower, YuriBloom } from "@/components/decorations"
 
 export const dynamic = "force-dynamic"
@@ -11,6 +12,7 @@ export const metadata: Metadata = {
 }
 
 export default async function BlogPage() {
+  await ensureTables()
   const posts = await getBlogPosts()
 
   return (

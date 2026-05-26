@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { HobbiesContent } from "@/components/hobbies-content"
 import { getHobbies, getHobbyCategories } from "@/lib/hobbies-db"
+import { ensureTables } from "@/lib/db"
 
 export const dynamic = "force-dynamic"
 
@@ -10,6 +11,7 @@ export const metadata: Metadata = {
 }
 
 export default async function HobbiesPage() {
+  await ensureTables()
   const [hobbies, categories] = await Promise.all([getHobbies(), getHobbyCategories()])
   return <HobbiesContent hobbies={hobbies} categories={categories} />
 }
