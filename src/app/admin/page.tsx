@@ -77,15 +77,15 @@ export default function AdminPage() {
     if (!files) return
     Array.from(files).forEach((file) => {
       const canvas = document.createElement("canvas")
-      canvas.width = 400; canvas.height = 400
+      canvas.width = 1200; canvas.height = 1200
       const ctx = canvas.getContext("2d")
       if (!ctx) return
       const img = new Image()
       img.onload = () => {
         const size = Math.min(img.width, img.height)
         const sx = (img.width - size) / 2; const sy = (img.height - size) / 2
-        ctx.drawImage(img, sx, sy, size, size, 0, 0, 400, 400)
-        const dataUrl = canvas.toDataURL("image/jpeg", 0.75)
+        ctx.drawImage(img, sx, sy, size, size, 0, 0, 1200, 1200)
+        const dataUrl = canvas.toDataURL("image/jpeg", 0.85)
         setDiaryForm((prev) => ({ ...prev, photos: [...prev.photos, dataUrl] }))
       }
       img.src = URL.createObjectURL(file)
