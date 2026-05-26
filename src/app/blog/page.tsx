@@ -1,20 +1,13 @@
 import type { Metadata } from "next"
 import { BlogList } from "@/components/blog-list"
-import { getBlogPosts } from "@/lib/blog-db"
-import { ensureTables } from "@/lib/db"
 import { ArkDiamond, HexGrid, Sparkles, CornerDeco, SakuraFlower, YuriBloom } from "@/components/decorations"
-
-export const dynamic = "force-dynamic"
 
 export const metadata: Metadata = {
   title: "BLOG — D05",
   description: "技术文章、生活随笔和一切有趣的想法",
 }
 
-export default async function BlogPage() {
-  await ensureTables()
-  const posts = await getBlogPosts()
-
+export default function BlogPage() {
   return (
     <div className="relative py-16 px-4 sm:px-6 overflow-hidden">
       <HexGrid opacity={0.03} />
@@ -56,7 +49,7 @@ export default async function BlogPage() {
           </div>
         </div>
 
-        <BlogList posts={posts} />
+        <BlogList />
 
         <div className="flex justify-center mt-12 opacity-25">
           <ArkDiamond size={6} />

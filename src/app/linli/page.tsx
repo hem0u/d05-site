@@ -3,11 +3,6 @@ import { HexGrid, Sparkles, CornerDeco, ArkDiamond } from "@/components/decorati
 import { LinliFriends } from "@/components/linli-friends"
 import { LinliGuestbook } from "@/components/linli-guestbook"
 import { LinliUpdates } from "@/components/linli-updates"
-import { getFriends } from "@/lib/friends-db"
-import { getChangelog } from "@/lib/changelog-db"
-import { ensureTables } from "@/lib/db"
-
-export const dynamic = "force-dynamic"
 
 export const metadata: Metadata = {
   title: "邻里 — D05",
@@ -23,10 +18,7 @@ function SectionHeader({ title, subtitle }: { title: string; subtitle: string })
   )
 }
 
-export default async function LinliPage() {
-  await ensureTables()
-  const [friends, changelog] = await Promise.all([getFriends(), getChangelog()])
-
+export default function LinliPage() {
   return (
     <div className="relative py-12 px-4 sm:px-6 overflow-hidden min-h-screen">
       <HexGrid opacity={0.03} />
@@ -56,7 +48,7 @@ export default async function LinliPage() {
           <section className="lg:col-span-3">
             <div className="sticky top-24">
               <SectionHeader title="友链" subtitle="Friends" />
-              <LinliFriends friends={friends} />
+              <LinliFriends />
             </div>
           </section>
 
@@ -70,7 +62,7 @@ export default async function LinliPage() {
           <section className="lg:col-span-4">
             <div className="sticky top-24">
               <SectionHeader title="更新" subtitle="Changelog" />
-              <LinliUpdates entries={changelog} />
+              <LinliUpdates />
             </div>
           </section>
         </div>

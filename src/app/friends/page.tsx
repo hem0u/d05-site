@@ -2,17 +2,13 @@ import type { Metadata } from "next"
 import { Heart } from "lucide-react"
 import { HexGrid, Sparkles, CornerDeco, ArkDiamond, SakuraFlower, YuriBloom } from "@/components/decorations"
 import { FriendsList, RandomVisit } from "@/components/friends-list"
-import { getFriends } from "@/lib/friends-db"
-
-export const dynamic = "force-dynamic"
 
 export const metadata: Metadata = {
   title: "友链 — D05",
   description: "朋友们的小站",
 }
 
-export default async function FriendsPage() {
-  const friends = await getFriends()
+export default function FriendsPage() {
   return (
     <div className="relative py-16 px-4 sm:px-6 overflow-hidden min-h-screen">
       <HexGrid opacity={0.04} />
@@ -54,11 +50,11 @@ export default async function FriendsPage() {
         </div>
 
         {/* Friends grid — 3 columns */}
-        <FriendsList friends={friends} />
+        <FriendsList />
 
         {/* Footer actions */}
         <div className="flex items-center justify-center gap-4 my-10 flex-wrap">
-          <RandomVisit friends={friends} />
+          <RandomVisit />
           <span className="text-muted-foreground/20">·</span>
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-border/15 bg-card/30 backdrop-blur-sm text-[11px] text-muted-foreground/40 tracking-widest">
             <Heart className="h-3 w-3" />

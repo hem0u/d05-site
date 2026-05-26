@@ -14,12 +14,26 @@ function getCardRects() {
   return map
 }
 
-export function HobbiesContent({ hobbies, categories }: { hobbies: Hobby[]; categories: string[] }) {
+export function HobbiesContent() {
+  const [hobbies, setHobbies] = useState<Hobby[]>([])
+  const [categories, setCategories] = useState<string[]>([])
   const [selected, setSelected] = useState<string | null>(null)
   const [animatingIn, setAnimatingIn] = useState(false)
   const [closing, setClosing] = useState(false)
   const [flyRect, setFlyRect] = useState<DOMRect | null>(null)
   const [activeCategory, setActiveCategory] = useState("全部")
+
+  useEffect(() => {
+    fetch("/api/hobbies")
+      .then((r) => r.json())
+      .then((data) => {
+        const list = Array.isArray(data) ? data : (data.hobbies || [])
+        setHobbies(list)
+        const cats = Array.from(new Set(list.map((h: Hobby) => h.category))) as string[]
+        setCategories(["全部", ...cats.sort()])
+      })
+      .catch(() => {})
+  }, [])
   const filteredHobbies = activeCategory === "全部"
     ? hobbies
     : hobbies.filter((h) => h.category === activeCategory)

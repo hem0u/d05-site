@@ -1,3 +1,6 @@
+"use client"
+
+import { useState, useEffect } from "react"
 import type { ChangelogEntry } from "@/lib/changelog-db"
 
 const typeConfig: Record<string, { label: string; color: string }> = {
@@ -6,7 +9,16 @@ const typeConfig: Record<string, { label: string; color: string }> = {
   update: { label: "更新", color: "bg-blue-500/15 text-blue-400" },
 }
 
-export function LinliUpdates({ entries }: { entries: ChangelogEntry[] }) {
+export function LinliUpdates() {
+  const [entries, setEntries] = useState<ChangelogEntry[]>([])
+
+  useEffect(() => {
+    fetch("/api/changelog")
+      .then((r) => r.json())
+      .then((data) => setEntries(Array.isArray(data.entries) ? data.entries : []))
+      .catch(() => {})
+  }, [])
+
   return (
     <div className="space-y-0 max-h-[calc(100vh-10rem)] overflow-y-auto pr-1 scrollbar-thin">
       {entries.map((entry, idx) => {

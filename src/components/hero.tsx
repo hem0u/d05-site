@@ -109,14 +109,30 @@ function calcDays(siteStart: string | undefined): number {
   return Math.floor((nowDay - startDay) / 86400000) + 1
 }
 
-export function Hero({ latestPost, blogCount = 0 }: { latestPost: { title: string; slug: string } | null; blogCount?: number }) {
+export function Hero() {
   const [daysRunning, setDaysRunning] = useState(() => calcDays(profile.siteStart))
+  const [latestPost, setLatestPost] = useState<{ title: string; slug: string } | null>(null)
+  const [blogCount, setBlogCount] = useState(0)
 
   useEffect(() => {
     const update = () => setDaysRunning(calcDays(profile.siteStart))
     update()
     const interval = setInterval(update, 60000)
     return () => clearInterval(interval)
+  }, [])
+
+  useEffect(() => {
+    fetch("/api/blog")
+      .then((r) => r.json())
+      .then((data) => {
+        const posts = Array.isArray(data.posts) ? data.posts : []
+        setBlogCount(posts.length)
+        if (posts.length > 0) {
+          const sorted = [...posts].sort((a: { date: string }, b: { date: string }) => new Date(b.date).getTime() - new Date(a.date).getTime())
+          setLatestPost({ title: sorted[0].title, slug: sorted[0].slug })
+        }
+      })
+      .catch(() => {})
   }, [])
 
   const stats = [

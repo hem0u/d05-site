@@ -1,9 +1,19 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import { ExternalLink } from "lucide-react"
 import type { Friend } from "@/data/friends"
 
-export function FriendsList({ friends }: { friends: Friend[] }) {
+export function FriendsList() {
+  const [friends, setFriends] = useState<Friend[]>([])
+
+  useEffect(() => {
+    fetch("/api/friends")
+      .then((r) => r.json())
+      .then((data) => setFriends(Array.isArray(data) ? data : (data.friends || [])))
+      .catch(() => {})
+  }, [])
+
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {friends.map((friend, i) => (
@@ -46,8 +56,18 @@ export function FriendsList({ friends }: { friends: Friend[] }) {
   )
 }
 
-export function RandomVisit({ friends }: { friends: Friend[] }) {
+export function RandomVisit() {
+  const [friends, setFriends] = useState<Friend[]>([])
+
+  useEffect(() => {
+    fetch("/api/friends")
+      .then((r) => r.json())
+      .then((data) => setFriends(Array.isArray(data) ? data : (data.friends || [])))
+      .catch(() => {})
+  }, [])
+
   const go = () => {
+    if (friends.length === 0) return
     const friend = friends[Math.floor(Math.random() * friends.length)]
     window.open(friend.url, "_blank", "noopener noreferrer")
   }

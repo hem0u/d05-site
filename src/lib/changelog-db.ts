@@ -8,6 +8,7 @@ export type ChangelogEntry = {
 }
 
 const fallback: ChangelogEntry[] = [
+  { id: 33, date: "2026-05-26", type: "fix", content: "修复页面切换极慢的问题：所有页面改为静态壳子 + 客户端获取数据，移除 force-dynamic 和 ensureTables 调用；仅博客详情页保留服务端渲染" },
   { id: 32, date: "2026-05-26", type: "fix", content: "修复导航栏及全站链接点击无反应的问题（button 嵌套在 Link/a 内事件被拦截，全站改用 asChild 模式）" },
   { id: 31, date: "2026-05-26", type: "fix", content: "修复日程管理中已有日程时点击「新日程」无反应的问题（表单显示条件错误限制为仅空列表）" },
   { id: 30, date: "2026-05-26", type: "fix", content: "修复日程管理页面不显示数据的问题（API 返回格式不统一导致 admin 和日历组件解析失败）" },

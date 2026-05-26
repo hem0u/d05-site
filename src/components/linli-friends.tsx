@@ -1,9 +1,19 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import { ExternalLink } from "lucide-react"
 import type { Friend } from "@/data/friends"
 
-export function LinliFriends({ friends }: { friends: Friend[] }) {
+export function LinliFriends() {
+  const [friends, setFriends] = useState<Friend[]>([])
+
+  useEffect(() => {
+    fetch("/api/friends")
+      .then((r) => r.json())
+      .then((data) => setFriends(Array.isArray(data) ? data : (data.friends || [])))
+      .catch(() => {})
+  }, [])
+
   return (
     <div className="space-y-3 max-h-[calc(100vh-10rem)] overflow-y-auto pr-1 scrollbar-thin">
       {friends.map((friend, idx) => (

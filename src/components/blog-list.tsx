@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { useRouter } from "next/navigation"
 import { Search, ChevronLeft, ChevronRight } from "lucide-react"
 import { BlogCard } from "@/components/blog-card"
@@ -8,11 +8,19 @@ import type { BlogPost } from "@/data/blog-posts"
 
 const PAGE_SIZE = 4
 
-export function BlogList({ posts: blogPosts }: { posts: BlogPost[] }) {
+export function BlogList() {
   const router = useRouter()
+  const [blogPosts, setBlogPosts] = useState<BlogPost[]>([])
   const [activeTag, setActiveTag] = useState<string | null>(null)
   const [query, setQuery] = useState("")
   const [page, setPage] = useState(1)
+
+  useEffect(() => {
+    fetch("/api/blog")
+      .then((r) => r.json())
+      .then((data) => setBlogPosts(Array.isArray(data.posts) ? data.posts : []))
+      .catch(() => {})
+  }, [])
 
   const allTags = useMemo(
     () => Array.from(new Set(blogPosts.flatMap((p) => p.tags))).sort(),

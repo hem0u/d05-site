@@ -8,8 +8,6 @@ export const metadata: Metadata = {
   description: "每月计划与日程管理",
 }
 
-export const dynamic = "force-dynamic"
-
 export default function SchedulePage() {
   return (
     <div className="relative py-16 px-4 sm:px-6 overflow-hidden min-h-screen">
