@@ -2,6 +2,8 @@ import { NextResponse } from "next/server"
 import { getCurrentUserId } from "@/lib/auth"
 import { getUserById } from "@/lib/user-db"
 
+export const dynamic = "force-dynamic"
+
 export async function GET() {
   const userId = await getCurrentUserId()
   if (!userId) {

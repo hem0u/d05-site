@@ -46,7 +46,13 @@ export async function setAuthCookie(token: string) {
 
 export async function clearAuthCookie() {
   const store = await cookies()
-  store.delete(COOKIE_NAME)
+  store.set(COOKIE_NAME, "", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    maxAge: 0,
+  })
 }
 
 export async function getAuthToken(): Promise<string | null> {
