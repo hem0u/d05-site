@@ -11,6 +11,11 @@ import { BlogEditor } from "@/components/blog-editor"
 import { HobbyEditor } from "@/components/hobby-editor"
 import { DashboardCharts } from "@/components/dashboard-charts"
 
+function today() {
+  const d = new Date()
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`
+}
+
 type Section = "dashboard" | "blog" | "records" | "schedule" | "hobbies" | "friends" | "guestbook" | "users" | "changelog"
 
 const sections: { key: Section; label: string; icon: React.ReactNode }[] = [
@@ -66,7 +71,7 @@ export default function AdminPage() {
 
   // Changelog state
   const [changelog, setChangelog] = useState<any[]>([])
-  const [clForm, setClForm] = useState({ date: new Date().toISOString().slice(0, 10), content: "", type: "update" as "fix" | "feat" | "update" })
+  const [clForm, setClForm] = useState({ date: today(), content: "", type: "update" as "fix" | "feat" | "update" })
 
   const toast = (text: string) => {
     setMsg(text)
@@ -283,7 +288,7 @@ export default function AdminPage() {
     })
     if (res.ok) {
       toast("已添加")
-      setClForm({ date: new Date().toISOString().slice(0, 10), content: "", type: "update" })
+      setClForm({ date: today(), content: "", type: "update" })
       fetchChangelog()
     }
   }
@@ -424,7 +429,7 @@ export default function AdminPage() {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h1 className="text-lg font-bold tracking-wider">记录管理</h1>
-              <button onClick={() => { setDiaryForm({ date: new Date().toISOString().slice(0, 10), content: "", photos: [] }); setDiaryNew(true) }} className={btnPrimary}>新记录</button>
+              <button onClick={() => { setDiaryForm({ date: today(), content: "", photos: [] }); setDiaryNew(true) }} className={btnPrimary}>新记录</button>
             </div>
 
             <div className="space-y-1">
@@ -495,7 +500,7 @@ export default function AdminPage() {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h1 className="text-lg font-bold tracking-wider">日程管理</h1>
-              <button onClick={() => { setScheduleForm({ date: new Date().toISOString().slice(0, 10), content: "" }); setScheduleEditDate(null) }} className={btnPrimary}>新日程</button>
+              <button onClick={() => { setScheduleForm({ date: today(), content: "" }); setScheduleEditDate(null) }} className={btnPrimary}>新日程</button>
             </div>
 
             <div className="space-y-1">
