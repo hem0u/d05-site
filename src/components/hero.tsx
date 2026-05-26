@@ -6,7 +6,6 @@ import { ArrowDown, Github, Mail } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { profile } from "@/data/profile"
 import { HexGrid, Sparkles, DriftingPetals, FloatingChibi, CornerDeco, ArkDiamond } from "@/components/decorations"
-import { blogPosts } from "@/data/blog-posts"
 import { projects } from "@/data/projects"
 
 const TYPEWRITER_TEXT = profile.subtitle
@@ -110,7 +109,7 @@ function calcDays(siteStart: string | undefined): number {
   return Math.floor((nowDay - startDay) / 86400000) + 1
 }
 
-export function Hero() {
+export function Hero({ latestPost, blogCount = 0 }: { latestPost: { title: string; slug: string } | null; blogCount?: number }) {
   const [daysRunning, setDaysRunning] = useState(() => calcDays(profile.siteStart))
 
   useEffect(() => {
@@ -122,11 +121,9 @@ export function Hero() {
 
   const stats = [
     { label: "Days Running", value: daysRunning },
-    { label: "Blog Posts", value: blogPosts.length },
+    { label: "Blog Posts", value: blogCount },
     { label: "Projects", value: projects.length },
   ]
-
-  const latestPost = [...blogPosts].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0]
 
   return (
     <section id="hero" className="relative min-h-[calc(100vh-3.5rem)] flex flex-col items-center justify-center px-4 text-center overflow-hidden vignette snap-start">
