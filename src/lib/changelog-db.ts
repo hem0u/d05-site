@@ -8,6 +8,7 @@ export type ChangelogEntry = {
 }
 
 const fallback: ChangelogEntry[] = [
+  { id: 23, date: "2026-05-26", type: "fix", content: "修复 role 列迁移在 Neon PgBouncer 事务模式下不执行的问题（改用 sql.query 单语句 ALTER TABLE）" },
   { id: 22, date: "2026-05-26", type: "fix", content: "修复管理后台冷启动时因 role 列/表不存在导致的应用错误（admin layout + API 路由均补齐 ensureTables）" },
   { id: 21, date: "2026-05-26", type: "fix", content: "修复登录时因 role 列不存在导致「用户不存在」的问题（登录路由未调用 ensureTables）" },
   { id: 20, date: "2026-05-26", type: "feat", content: "新增管理员角色系统和管理后台 /admin；所有内容编辑移至后台；留言需登录后使用账号昵称" },
