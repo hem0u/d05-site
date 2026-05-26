@@ -109,14 +109,14 @@ export function CalendarSchedule() {
           const hasPlan = day ? plans.has(key) : false
           const isToday = day && key === todayKey()
           const past = day ? isPast(key) : false
-          const canHover = day && past && hasPlan
+          const canHover = day && hasPlan
 
           const cell = (
             <div
               onMouseEnter={() => canHover && setHovered(key)}
               onMouseLeave={() => setHovered(null)}
               className={`aspect-square border-r border-b border-border/10 flex items-center justify-center transition-all relative
-                ${past && !hasPlan ? "bg-muted/10 text-muted-foreground/20" : past && hasPlan ? "hover:bg-muted/20" : ""}
+                ${past && !hasPlan ? "bg-muted/10 text-muted-foreground/20" : hasPlan ? "hover:bg-muted/20" : ""}
               `}
             >
               {day && (
