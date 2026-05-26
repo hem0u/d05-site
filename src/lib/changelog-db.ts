@@ -8,6 +8,7 @@ export type ChangelogEntry = {
 }
 
 const fallback: ChangelogEntry[] = [
+  { id: 26, date: "2026-05-26", type: "fix", content: "修复退出登录后导航栏仍显示头像的问题（清除 cookie 时匹配相同参数 + auth/me 禁止缓存）" },
   { id: 25, date: "2026-05-26", type: "fix", content: "修复博客/好物/邻里页面冷启动时表不存在导致无内容或崩溃的问题（补 ensureTables + try/catch）" },
   { id: 24, date: "2026-05-26", type: "feat", content: "管理员登录后直接跳转管理后台 /admin，普通用户跳转首页" },
   { id: 23, date: "2026-05-26", type: "fix", content: "修复 role 列迁移在 Neon PgBouncer 事务模式下不执行的问题（改用 sql.query 单语句 ALTER TABLE）" },
