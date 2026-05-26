@@ -148,6 +148,16 @@ export async function saveVerificationCode(email: string, code: string): Promise
   }
 }
 
+export async function updatePassword(email: string, passwordHash: string): Promise<boolean> {
+  try {
+    await sql`UPDATE users SET password_hash = ${passwordHash} WHERE email = ${email.toLowerCase()}`
+    return true
+  } catch (e) {
+    console.error("[user-db] updatePassword failed:", e)
+    return false
+  }
+}
+
 export async function verifyCode(email: string, code: string): Promise<boolean> {
   try {
     const { rows } = await sql`
