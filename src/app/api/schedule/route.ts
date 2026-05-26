@@ -14,13 +14,13 @@ async function ensure() {
 export async function GET(req: NextRequest) {
   await ensure()
   const date = req.nextUrl.searchParams.get("date")
-  if (!HAS_DB) return NextResponse.json(null)
+  if (!HAS_DB) return NextResponse.json({ schedules: [] })
   if (date) {
     const { rows } = await sql`SELECT date, content FROM schedules WHERE date = ${date}`
     return NextResponse.json(rows[0] ?? null)
   }
   const { rows } = await sql`SELECT date, content FROM schedules ORDER BY date`
-  return NextResponse.json(rows)
+  return NextResponse.json({ schedules: rows })
 }
 
 export async function POST(req: NextRequest) {

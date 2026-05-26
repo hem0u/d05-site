@@ -49,9 +49,10 @@ export function CalendarSchedule() {
     try {
       const res = await fetch("/api/schedule")
       if (res.ok) {
-        const data: Plan[] = await res.json()
+        const data = await res.json()
+        const list: Plan[] = Array.isArray(data) ? data : (data.schedules || [])
         const map = new Map<string, string>()
-        data.forEach((p) => p.content && map.set(p.date, p.content))
+        list.forEach((p) => p.content && map.set(p.date, p.content))
         setPlans(map)
         setUseApi(true)
         return

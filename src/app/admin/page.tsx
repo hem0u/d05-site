@@ -114,7 +114,8 @@ export default function AdminPage() {
   const fetchSchedules = useCallback(async () => {
     const res = await fetch("/api/schedule")
     const data = await res.json()
-    setSchedules(Array.isArray(data.schedules) ? data.schedules : [])
+    const list = Array.isArray(data) ? data : (data.schedules || [])
+    setSchedules(Array.isArray(list) ? list : [])
   }, [])
 
   const fetchHobbies = useCallback(async () => {
