@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from "next/server"
 import { comparePassword, signToken, setAuthCookie } from "@/lib/auth"
 import { getUserByEmail, getPasswordHash } from "@/lib/user-db"
+import { ensureTables } from "@/lib/db"
 
 export async function POST(req: NextRequest) {
   try {
+    await ensureTables()
     const { email, password } = await req.json()
 
     if (!email || !password) {
