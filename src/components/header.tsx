@@ -46,19 +46,19 @@ export function Header() {
         {/* Desktop nav */}
         <nav className="hidden items-center gap-0 md:flex">
           {links.map((link) => (
-            <Link key={link.href} href={link.href}>
-              <Button
-                variant="ghost"
-                size="sm"
-                className={`rounded-none text-xs tracking-widest uppercase transition-all ${
-                  pathname === link.href
-                    ? "text-[hsl(var(--ark-amber))] border-b border-[hsl(var(--ark-amber))]"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {link.label}
-              </Button>
-            </Link>
+            <Button
+              key={link.href}
+              variant="ghost"
+              size="sm"
+              asChild
+              className={`rounded-none text-xs tracking-widest uppercase transition-all ${
+                pathname === link.href
+                  ? "text-[hsl(var(--ark-amber))] border-b border-[hsl(var(--ark-amber))]"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <Link href={link.href}>{link.label}</Link>
+            </Button>
           ))}
         </nav>
 
@@ -80,14 +80,14 @@ export function Header() {
               </SheetHeader>
               <nav className="mt-6 flex flex-col gap-2">
                 {links.map((link) => (
-                  <Link key={link.href} href={link.href}>
-                    <Button
-                      variant={pathname === link.href ? "secondary" : "ghost"}
-                      className="w-full justify-start"
-                    >
-                      {link.label}
-                    </Button>
-                  </Link>
+                  <Button
+                    key={link.href}
+                    variant={pathname === link.href ? "secondary" : "ghost"}
+                    asChild
+                    className="w-full justify-start"
+                  >
+                    <Link href={link.href}>{link.label}</Link>
+                  </Button>
                 ))}
               </nav>
             </SheetContent>
