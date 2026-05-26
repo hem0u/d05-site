@@ -200,6 +200,15 @@ export function Diary() {
         {/* Content area */}
         {activeEntry ? (
           <div className="space-y-5">
+            {/* Text */}
+            {activeEntry.content && (
+              <div className="bg-card/40 rounded-xl border border-border/15 p-6 backdrop-blur-sm">
+                <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap">
+                  {activeEntry.content}
+                </p>
+              </div>
+            )}
+
             {/* Photos */}
             {activeEntry.photos.length > 0 && (
               <div
@@ -208,19 +217,10 @@ export function Diary() {
                 }`}
               >
                 {activeEntry.photos.map((src, i) => (
-                  <div key={i} className="aspect-video rounded-xl overflow-hidden bg-muted/30 border border-border/20 hover:border-[hsl(var(--ark-amber)/0.2)] transition-colors">
+                  <div key={i} className="aspect-square rounded-xl overflow-hidden bg-muted/30 border border-border/20 hover:border-[hsl(var(--ark-amber)/0.2)] transition-colors">
                     <img src={src} alt="" className="w-full h-full object-cover" />
                   </div>
                 ))}
-              </div>
-            )}
-
-            {/* Text */}
-            {activeEntry.content && (
-              <div className="bg-card/40 rounded-xl border border-border/15 p-6 backdrop-blur-sm">
-                <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap">
-                  {activeEntry.content}
-                </p>
               </div>
             )}
 
