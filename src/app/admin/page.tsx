@@ -9,6 +9,7 @@ import {
 } from "lucide-react"
 import { BlogEditor } from "@/components/blog-editor"
 import { HobbyEditor } from "@/components/hobby-editor"
+import { DashboardCharts } from "@/components/dashboard-charts"
 
 type Section = "dashboard" | "blog" | "records" | "schedule" | "hobbies" | "friends" | "guestbook" | "users" | "changelog"
 
@@ -379,6 +380,8 @@ export default function AdminPage() {
                 </div>
               ))}
             </div>
+
+            <DashboardCharts stats={stats} blogPosts={blogPosts} users={users} />
           </div>
         )}
 

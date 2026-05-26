@@ -8,6 +8,7 @@ export type ChangelogEntry = {
 }
 
 const fallback: ChangelogEntry[] = [
+  { id: 29, date: "2026-05-26", type: "feat", content: "仪表盘新增图表统计：内容分布饼图、月度文章柱状图、用户注册趋势面积图" },
   { id: 28, date: "2026-05-26", type: "fix", content: "记录页改为文字在上图片在下，图片容器改为正方形比例避免裁切" },
   { id: 27, date: "2026-05-26", type: "update", content: "记录照片改为本地上传（支持多选、自动裁剪至400x400、预览和删除）" },
   { id: 26, date: "2026-05-26", type: "fix", content: "修复退出登录后导航栏仍显示头像的问题（清除 cookie 时匹配相同参数 + auth/me 禁止缓存）" },
