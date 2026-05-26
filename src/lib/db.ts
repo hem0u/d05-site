@@ -88,6 +88,16 @@ export async function ensureTables() {
     )
   `
 
+  // Migration: add role column to existing users table
+  try {
+    await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS role TEXT NOT NULL DEFAULT 'user'`
+  } catch { /* column might already exist */ }
+
+  // Migration: add user_id column to existing guestbook_messages table
+  try {
+    await sql`ALTER TABLE guestbook_messages ADD COLUMN IF NOT EXISTS user_id INTEGER`
+  } catch { /* column might already exist */ }
+
   await sql`
     CREATE TABLE IF NOT EXISTS verification_codes (
       id SERIAL PRIMARY KEY,
