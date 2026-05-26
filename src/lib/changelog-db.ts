@@ -8,6 +8,7 @@ export type ChangelogEntry = {
 }
 
 const fallback: ChangelogEntry[] = [
+  { id: 38, date: "2026-05-27", type: "feat", content: "新增修改密码功能：个人页可通过邮箱验证码修改密码；登录页新增「忘记密码」入口，同样通过验证码重置密码" },
   { id: 37, date: "2026-05-27", type: "update", content: "大幅优化数据库查询速度：ensureTables 17 条串行 SQL 改为 Promise.all 并行执行（4s→0.5s）；API 缓存 TTL 从 30s 提升至 5min；GET 路由移除冗余表检查；新增 /api/keep-warm 保活端点" },
   { id: 36, date: "2026-05-27", type: "fix", content: "修复 React #418 水合错误：将所有 Math.random() 从渲染中移入 useEffect/useState，确保服务端和客户端渲染一致" },
   { id: 35, date: "2026-05-27", type: "fix", content: "优化管理后台加载速度：role 写入 JWT 使 isAdmin() 无需查库，移除 admin layout 中的 ensureTables 和 DB 查询" },
