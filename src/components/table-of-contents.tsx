@@ -37,26 +37,25 @@ export function TableOfContents({ headings }: { headings: TocHeading[] }) {
         <span className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/50">目录</span>
         <div className="flex-1 h-px bg-gradient-to-r from-[hsl(var(--ark-amber)/0.3)] to-transparent ml-1" />
       </div>
-      <ul className="space-y-0 border-l border-[hsl(var(--ark-amber)/0.12)]">
+      <ul className="space-y-0.5 border-l border-[hsl(var(--ark-amber)/0.12)]">
         {headings.map((h) => (
           <li key={h.id}>
             <a
               href={`#${h.id}`}
-              className={`block text-xs py-1.5 transition-all duration-200 hover:text-[hsl(var(--ark-amber))] relative ${
-                h.level >= 3 ? "pl-4" : h.level >= 2 ? "pl-3" : "pl-1"
+              className={`block py-1.5 transition-all duration-200 hover:text-[hsl(var(--ark-amber))] border-l-2 -ml-px ${
+                h.level === 1
+                  ? "pl-3 text-[11px] font-semibold"
+                  : h.level === 2
+                  ? "pl-5 text-[11px] font-medium"
+                  : h.level === 3
+                  ? "pl-7 text-[10px]"
+                  : "pl-9 text-[10px]"
               } ${
                 activeId === h.id
-                  ? "text-[hsl(var(--ark-amber))] font-medium"
-                  : "text-muted-foreground/50"
+                  ? "text-[hsl(var(--ark-amber))] border-l-[hsl(var(--ark-amber))]"
+                  : "text-muted-foreground/50 border-l-transparent"
               }`}
             >
-              <span
-                className={`absolute left-0 top-1/2 -translate-y-1/2 w-1 h-1 transition-all duration-200 ${
-                  activeId === h.id
-                    ? "bg-[hsl(var(--ark-amber))]"
-                    : "bg-transparent group-hover:bg-muted-foreground/30"
-                }`}
-              />
               {h.text}
             </a>
           </li>
