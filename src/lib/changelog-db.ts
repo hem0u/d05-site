@@ -39,10 +39,7 @@ const fallback: ChangelogEntry[] = [
   { id: 1, date: "2026-05-26", type: "fix", content: "修复博客文章点击后出现 404 的问题，移除不可靠的 HAS_DB 检测，改用 try/catch + 后备数据模式" },
 ]
 
-let seeded = false
-
 async function ensureSeeded() {
-  if (seeded) return
   try {
     for (const entry of fallback) {
       await sql`
@@ -51,7 +48,6 @@ async function ensureSeeded() {
         ON CONFLICT (id) DO NOTHING
       `
     }
-    seeded = true
   } catch (e) {
     console.error("[changelog-db] ensureSeeded failed:", e)
   }
