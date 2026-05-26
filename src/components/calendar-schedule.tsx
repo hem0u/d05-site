@@ -129,8 +129,8 @@ export function CalendarSchedule() {
                 )
               )}
 
-              {/* Hover tooltip for past days with plans */}
-              {hovered === key && hasPlan && past && (
+              {/* Hover tooltip */}
+              {hovered === key && hasPlan && (
                 <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 z-30 pointer-events-none">
                   <div className="bg-card border border-border/30 rounded-lg shadow-xl shadow-black/20 p-2.5 w-44 text-left">
                     <p className="text-[10px] text-muted-foreground/40 mb-0.5">{key}</p>
