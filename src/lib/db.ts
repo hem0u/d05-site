@@ -4,8 +4,11 @@ const HAS_DB = !!process.env.POSTGRES_URL || !!process.env.DATABASE_URL
 
 export { sql, HAS_DB }
 
+let tablesEnsured = false
+
 export async function ensureTables() {
-  if (!HAS_DB) return
+  if (!HAS_DB || tablesEnsured) return
+  tablesEnsured = true
 
   await sql`
     CREATE TABLE IF NOT EXISTS blog_posts (
