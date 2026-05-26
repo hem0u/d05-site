@@ -45,7 +45,7 @@ export function BlogList() {
     return bySearch.sort(
       (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
     )
-  }, [activeTag, query])
+  }, [blogPosts, activeTag, query])
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
   const safePage = Math.min(page, totalPages)
