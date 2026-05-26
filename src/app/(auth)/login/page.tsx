@@ -25,7 +25,11 @@ export default function LoginPage() {
         setError(data.error || "登录失败")
         return
       }
-      window.location.href = "/"
+      if (data.user?.role === "admin") {
+        window.location.href = "/admin"
+      } else {
+        window.location.href = "/"
+      }
     } catch {
       setError("网络错误")
     } finally {
