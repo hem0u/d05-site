@@ -8,6 +8,7 @@ export type ChangelogEntry = {
 }
 
 const fallback: ChangelogEntry[] = [
+  { id: 28, date: "2026-05-26", type: "fix", content: "记录页改为文字在上图片在下，图片容器改为正方形比例避免裁切" },
   { id: 27, date: "2026-05-26", type: "update", content: "记录照片改为本地上传（支持多选、自动裁剪至400x400、预览和删除）" },
   { id: 26, date: "2026-05-26", type: "fix", content: "修复退出登录后导航栏仍显示头像的问题（清除 cookie 时匹配相同参数 + auth/me 禁止缓存）" },
   { id: 25, date: "2026-05-26", type: "fix", content: "修复博客/好物/邻里页面冷启动时表不存在导致无内容或崩溃的问题（补 ensureTables + try/catch）" },
