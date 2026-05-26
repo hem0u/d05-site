@@ -8,6 +8,7 @@ export type ChangelogEntry = {
 }
 
 const fallback: ChangelogEntry[] = [
+  { id: 20, date: "2026-05-26", type: "feat", content: "新增管理员角色系统和管理后台 /admin；所有内容编辑（博客/记录/日程/好物/友链）移至后台；留言自动使用登录昵称" },
   { id: 19, date: "2026-05-26", type: "update", content: "头像改为本地上传，自动裁剪居中并缩放至 200x200，存储为 base64 无需图床" },
   { id: 18, date: "2026-05-26", type: "fix", content: "修复登录后导航栏仍显示登录按钮的问题（改用硬导航刷新布局）；注册成功后提示并跳转登录页" },
   { id: 17, date: "2026-05-26", type: "fix", content: "修复验证码邮件已发送但注册时提示「验证码错误或已过期」的问题（verification_codes 表未创建 + 保存结果未检查）" },
