@@ -11,15 +11,9 @@ import { projects } from "@/data/projects"
 const TYPEWRITER_TEXT = profile.subtitle
 
 function FloatingOrbs() {
-  const orbs = Array.from({ length: 18 }).map((_, i) => ({
-    size: Math.random() * 8 + 4,
-    x: Math.random() * 100,
-    y: 30 + Math.random() * 70,
-    delay: Math.random() * 6,
-    duration: Math.random() * 8 + 6,
-    drift: (Math.random() - 0.5) * 30,
-    color: i % 3 === 0 ? "amber" : i % 3 === 1 ? "blue" : "pink",
-  }))
+  const [orbs, setOrbs] = useState<ReturnType<typeof makeOrbs>>([])
+
+  useEffect(() => { setOrbs(makeOrbs()) }, [])
 
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden>
@@ -42,6 +36,18 @@ function FloatingOrbs() {
       ))}
     </div>
   )
+}
+
+function makeOrbs() {
+  return Array.from({ length: 18 }).map((_, i) => ({
+    size: Math.random() * 8 + 4,
+    x: Math.random() * 100,
+    y: 30 + Math.random() * 70,
+    delay: Math.random() * 6,
+    duration: Math.random() * 8 + 6,
+    drift: (Math.random() - 0.5) * 30,
+    color: i % 3 === 0 ? "amber" : i % 3 === 1 ? "blue" : "pink",
+  }))
 }
 
 function DiamondRings() {

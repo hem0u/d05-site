@@ -4,6 +4,10 @@
    Arknights diamond shapes, sparkles
    ======================================== */
 
+"use client"
+
+import { useState, useEffect } from "react"
+
 /* ── Sakura (cherry blossom) flower ── */
 export function SakuraFlower({
   size = 40,
@@ -255,40 +259,49 @@ export function HexGrid({ opacity = 0.04 }: { opacity?: number }) {
 }
 
 /* ── Sparkle particles ── */
+
+const shapes = ["✦", "✧", "⋆", "·"]
+
+function generateSparkles(count: number) {
+  return Array.from({ length: count }).map((_, i) => ({
+    size: Math.random() * 10 + 6,
+    left: Math.random() * 100,
+    top: Math.random() * 100,
+    delay: Math.random() * 4,
+    duration: Math.random() * 3 + 2,
+    shape: shapes[i % shapes.length],
+    isSakura: i % 3 === 0,
+    isLavender: i % 3 === 1,
+  }))
+}
+
 export function Sparkles({ count = 20 }: { count?: number }) {
-  const shapes = ["✦", "✧", "⋆", "·"]
+  const [items, setItems] = useState<ReturnType<typeof generateSparkles>>([])
+
+  useEffect(() => { setItems(generateSparkles(count)) }, [count])
+
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden>
-      {Array.from({ length: count }).map((_, i) => {
-        const size = Math.random() * 10 + 6
-        const left = Math.random() * 100
-        const top = Math.random() * 100
-        const delay = Math.random() * 4
-        const duration = Math.random() * 3 + 2
-        const shape = shapes[i % shapes.length]
-        const isSakura = i % 3 === 0
-        const isLavender = i % 3 === 1
-        return (
-          <span
-            key={i}
-            className="absolute select-none"
-            style={{
-              fontSize: `${size}px`,
-              left: `${left}%`,
-              top: `${top}%`,
-              animation: `sparkle-fade ${duration}s ${delay}s ease-in-out infinite`,
-              color: isSakura
-                ? "#FFB7C5"
-                : isLavender
-                  ? "#C4B5FD"
-                  : "#F59E0B",
-              opacity: 0,
-            }}
-          >
-            {shape}
-          </span>
-        )
-      })}
+      {items.map((s, i) => (
+        <span
+          key={i}
+          className="absolute select-none"
+          style={{
+            fontSize: `${s.size}px`,
+            left: `${s.left}%`,
+            top: `${s.top}%`,
+            animation: `sparkle-fade ${s.duration}s ${s.delay}s ease-in-out infinite`,
+            color: s.isSakura
+              ? "#FFB7C5"
+              : s.isLavender
+                ? "#C4B5FD"
+                : "#F59E0B",
+            opacity: 0,
+          }}
+        >
+          {s.shape}
+        </span>
+      ))}
     </div>
   )
 }
@@ -342,35 +355,42 @@ export function FloatingChibi({
 }
 
 /* ── Drifting petals (sakura + lily) ── */
+function generatePetals(count: number) {
+  return Array.from({ length: count }).map((_, i) => ({
+    isSakura: i % 2 === 0,
+    size: Math.random() * 14 + 10,
+    left: Math.random() * 100,
+    delay: Math.random() * 10,
+    duration: Math.random() * 8 + 7,
+    sway: (Math.random() - 0.5) * 120,
+  }))
+}
+
 export function DriftingPetals({ count = 12 }: { count?: number }) {
+  const [petals, setPetals] = useState<ReturnType<typeof generatePetals>>([])
+
+  useEffect(() => { setPetals(generatePetals(count)) }, [count])
+
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden>
-      {Array.from({ length: count }).map((_, i) => {
-        const isSakura = i % 2 === 0
-        const size = Math.random() * 14 + 10
-        const left = Math.random() * 100
-        const delay = Math.random() * 10
-        const duration = Math.random() * 8 + 7
-        const sway = (Math.random() - 0.5) * 120
-        return (
-          <span
-            key={i}
-            className="absolute"
-            style={{
-              left: `${left}%`,
-              top: "-5%",
-              animation: `petal-drift ${duration}s ${delay}s linear infinite`,
-              ["--sway" as string]: `${sway}px`,
-            }}
-          >
-            {isSakura ? (
-              <SakuraFlower size={size} className="opacity-50 dark:opacity-35" />
-            ) : (
-              <YuriBloom size={size} className="opacity-50 dark:opacity-35" />
-            )}
-          </span>
-        )
-      })}
+      {petals.map((p, i) => (
+        <span
+          key={i}
+          className="absolute"
+          style={{
+            left: `${p.left}%`,
+            top: "-5%",
+            animation: `petal-drift ${p.duration}s ${p.delay}s linear infinite`,
+            ["--sway" as string]: `${p.sway}px`,
+          }}
+        >
+          {p.isSakura ? (
+            <SakuraFlower size={p.size} className="opacity-50 dark:opacity-35" />
+          ) : (
+            <YuriBloom size={p.size} className="opacity-50 dark:opacity-35" />
+          )}
+        </span>
+      ))}
     </div>
   )
 }

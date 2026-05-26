@@ -14,12 +14,25 @@ const BOOT_LINES = [
 const SCRAMBLE_CHARS = "!@#$%^&*()_+-=[]{}|;:,.<>?/\\`~"
 const FINAL_TEXT = "RHODES ISLAND"
 
+function generateParticles() {
+  return Array.from({ length: 40 }).map(() => ({
+    w: Math.random() * 2 + 1,
+    h: Math.random() * 2 + 1,
+    l: Math.random() * 100,
+    t: Math.random() * 100,
+    d: Math.random() * 4 + 3,
+    del: Math.random() * 3,
+  }))
+}
+
 export function BootScreen() {
   const [phase, setPhase] = useState<"boot" | "glitch" | "fadeout" | "done">("boot")
   const [progress, setProgress] = useState(0)
   const [visibleLines, setVisibleLines] = useState(0)
   const [titleText, setTitleText] = useState("")
   const [titleDone, setTitleDone] = useState(false)
+  const [particles, setParticles] = useState<ReturnType<typeof generateParticles>>([])
+  const [glitchDelays, setGlitchDelays] = useState<number[]>([])
 
   // Scramble-to-text effect for RHODES ISLAND
   useEffect(() => {
@@ -59,6 +72,10 @@ export function BootScreen() {
     }
     if (!played) sessionStorage.setItem(key, "1")
 
+    // Generate random particles & glitch delays once on mount
+    setParticles(generateParticles())
+    setGlitchDelays([0, 15, 30, 50, 70, 85].map(() => Math.random() * 0.3))
+
     let progressDone = false
     let linesDone = false
     const allLines = BOOT_LINES.length
@@ -67,7 +84,7 @@ export function BootScreen() {
       if (progressDone && linesDone) {
         setPhase("glitch")
         setTimeout(() => setPhase("fadeout"), 300)
-        setTimeout(() => setPhase("done"), 1300) // 300 glitch + 900 fade + 100 buffer
+        setTimeout(() => setPhase("done"), 1300)
       }
     }
 
@@ -118,13 +135,13 @@ export function BootScreen() {
       {/* Glitch overlay bars */}
       {phase === "glitch" && (
         <div className="absolute inset-0 z-20 pointer-events-none">
-          {[0, 15, 30, 50, 70, 85].map((y) => (
+          {[0, 15, 30, 50, 70, 85].map((y, idx) => (
             <div
               key={y}
               className="absolute left-0 right-0 h-[2px] bg-amber-500/60"
               style={{
                 top: `${y}%`,
-                animation: `glitch-bar 0.15s ease-in-out ${Math.random() * 0.3}s`,
+                animation: `glitch-bar 0.15s ease-in-out ${glitchDelays[idx] ?? 0}s`,
               }}
             />
           ))}
@@ -152,17 +169,17 @@ export function BootScreen() {
 
       {/* Floating particles */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {Array.from({ length: 40 }).map((_, i) => (
+        {particles.map((p, i) => (
           <div
             key={i}
             className="absolute rounded-full bg-amber-500"
             style={{
-              width: `${Math.random() * 2 + 1}px`,
-              height: `${Math.random() * 2 + 1}px`,
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
+              width: `${p.w}px`,
+              height: `${p.h}px`,
+              left: `${p.l}%`,
+              top: `${p.t}%`,
               opacity: 0,
-              animation: `particle-float ${Math.random() * 4 + 3}s ${Math.random() * 3}s linear infinite`,
+              animation: `particle-float ${p.d}s ${p.del}s linear infinite`,
             }}
           />
         ))}

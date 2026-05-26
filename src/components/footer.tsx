@@ -24,10 +24,11 @@ function calcDays(siteStart: string | undefined): number {
 }
 
 export function Footer() {
-  const quote = QUOTES[Math.floor(Math.random() * QUOTES.length)]
+  const [quote, setQuote] = useState(QUOTES[0])
   const [daysOnline, setDaysOnline] = useState(() => calcDays(profile.siteStart))
 
   useEffect(() => {
+    setQuote(QUOTES[Math.floor(Math.random() * QUOTES.length)])
     if (!profile.siteStart) return
     const update = () => setDaysOnline(calcDays(profile.siteStart))
     update()
@@ -102,6 +103,7 @@ export function Footer() {
         </p>
         <p className="text-[10px] text-muted-foreground/40 tracking-wider">
           &copy; {new Date().getFullYear()} D05 — Built with Next.js
+          {/* Year from Date is stable across server/client for the same build */}
         </p>
       </div>
     </footer>
