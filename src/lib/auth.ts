@@ -17,8 +17,8 @@ export async function comparePassword(password: string, hash: string): Promise<b
   return bcrypt.compare(password, hash)
 }
 
-export async function signToken(payload: { userId: number }): Promise<string> {
-  return new SignJWT({ sub: String(payload.userId) })
+export async function signToken(payload: { userId: number; role?: string }): Promise<string> {
+  return new SignJWT({ sub: String(payload.userId), role: payload.role ?? "user" })
     .setProtectedHeader({ alg: "HS256" })
     .setExpirationTime("7d")
     .sign(JWT_SECRET)
@@ -66,7 +66,22 @@ export async function getCurrentUserId(): Promise<number | null> {
   return verifyToken(token)
 }
 
+export async function getRoleFromToken(): Promise<string | null> {
+  const token = await getAuthToken()
+  if (!token) return null
+  try {
+    const { payload } = await jwtVerify(token, JWT_SECRET)
+    return (payload.role as string) ?? null
+  } catch {
+    return null
+  }
+}
+
 export async function getCurrentUserRole(): Promise<string | null> {
+  // Fast path: read role from JWT
+  const role = await getRoleFromToken()
+  if (role) return role
+  // Fallback: DB query for old tokens without role
   const userId = await getCurrentUserId()
   if (!userId) return null
   try {
@@ -78,6 +93,8 @@ export async function getCurrentUserRole(): Promise<string | null> {
 }
 
 export async function isAdmin(): Promise<boolean> {
-  const role = await getCurrentUserRole()
-  return role === "admin"
+  const role = await getRoleFromToken()
+  if (role) return role === "admin"
+  // Fallback for old tokens
+  return (await getCurrentUserRole()) === "admin"
 }

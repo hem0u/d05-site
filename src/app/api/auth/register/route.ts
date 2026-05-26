@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
       user.role = "admin"
     }
 
-    const token = await signToken({ userId: user.id })
+    const token = await signToken({ userId: user.id, role: user.role })
     await setAuthCookie(token)
 
     return NextResponse.json({ user })

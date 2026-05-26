@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "用户不存在" }, { status: 401 })
     }
 
-    const token = await signToken({ userId: user.id })
+    const token = await signToken({ userId: user.id, role: user.role })
     await setAuthCookie(token)
 
     return NextResponse.json({ user })
