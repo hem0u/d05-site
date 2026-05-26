@@ -34,12 +34,12 @@ export function BlogCard({ post, featured }: { post: BlogPost; featured?: boolea
         </div>
       </CardContent>
       <CardFooter>
-        <Link href={`/blog/${post.slug}`}>
-          <Button variant="ghost" size="sm" className="group/btn text-xs tracking-wider hover:text-[hsl(var(--ark-amber))]">
+        <Button variant="ghost" size="sm" asChild className="group/btn text-xs tracking-wider hover:text-[hsl(var(--ark-amber))]">
+          <Link href={`/blog/${post.slug}`}>
             阅读更多
             <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover/btn:translate-x-1" />
-          </Button>
-        </Link>
+          </Link>
+        </Button>
       </CardFooter>
     </Card>
   )

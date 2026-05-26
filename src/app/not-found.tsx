@@ -43,12 +43,12 @@ export default function NotFound() {
           </p>
         </div>
 
-        <Link href="/">
-          <Button variant="kawaii" size="lg" className="rounded-full mt-2">
+        <Button variant="kawaii" size="lg" asChild className="rounded-full mt-2">
+          <Link href="/">
             <Home className="h-4 w-4" />
             返回首页
-          </Button>
-        </Link>
+          </Link>
+        </Button>
 
         <div className="flex items-center gap-3 opacity-25">
           <ArkDiamond size={5} />

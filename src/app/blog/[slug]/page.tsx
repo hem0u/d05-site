@@ -53,12 +53,12 @@ export default async function BlogPostPage({ params }: Props) {
       <TableOfContents headings={headings} />
 
       <div className="relative z-10 mx-auto max-w-3xl">
-            <Link href="/blog">
-              <Button variant="ghost" size="sm" className="mb-6 rounded-full">
+            <Button variant="ghost" size="sm" asChild className="mb-6 rounded-full">
+              <Link href="/blog">
                 <ArrowLeft className="h-4 w-4" />
                 返回博客
-              </Button>
-            </Link>
+              </Link>
+            </Button>
 
         <header className="mb-8">
           <div className="flex items-center gap-3 text-sm text-muted-foreground mb-4">
@@ -108,11 +108,9 @@ export default async function BlogPostPage({ params }: Props) {
         <Separator className="my-10" />
 
         <footer className="text-center">
-          <Link href="/blog">
-            <Button variant="kawaii" size="lg" className="rounded-full">
-              查看更多文章
-            </Button>
-          </Link>
+          <Button variant="kawaii" size="lg" asChild className="rounded-full">
+            <Link href="/blog">查看更多文章</Link>
+          </Button>
           <div className="flex justify-center mt-10 opacity-25">
             <ArkDiamond size={6} />
           </div>

@@ -68,19 +68,19 @@ export function Projects() {
               </CardContent>
               <CardFooter className="gap-2">
                 {project.link && (
-                  <a href={project.link} target="_blank" rel="noopener noreferrer">
-                    <Button variant="kawaii" size="sm" className="rounded-sm">
+                  <Button variant="kawaii" size="sm" asChild className="rounded-sm">
+                    <a href={project.link} target="_blank" rel="noopener noreferrer">
                       <ExternalLink className="h-3.5 w-3.5" />
                       访问
-                    </Button>
-                  </a>
+                    </a>
+                  </Button>
                 )}
                 {project.github && (
-                  <a href={project.github} target="_blank" rel="noopener noreferrer">
-                    <Button variant="ghost" size="icon" className="h-8 w-8 hover:text-[hsl(var(--ark-blue))]">
+                  <Button variant="ghost" size="icon" asChild className="h-8 w-8 hover:text-[hsl(var(--ark-blue))]">
+                    <a href={project.github} target="_blank" rel="noopener noreferrer">
                       <Github className="h-4 w-4" />
-                    </Button>
-                  </a>
+                    </a>
+                  </Button>
                 )}
               </CardFooter>
             </Card>
