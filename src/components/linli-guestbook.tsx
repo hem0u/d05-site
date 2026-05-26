@@ -9,6 +9,8 @@ type Message = {
   name: string
   content: string
   createdAt: string
+  avatar: string | null
+  role: string
 }
 
 export function LinliGuestbook() {
@@ -44,6 +46,8 @@ export function LinliGuestbook() {
             name: String(m.name ?? ""),
             content: String(m.content ?? ""),
             createdAt: String(m.createdAt ?? ""),
+            avatar: (m.avatar as string) || null,
+            role: String(m.role || "user"),
           })))
         }
       }
@@ -119,10 +123,17 @@ export function LinliGuestbook() {
             style={{ animationDelay: `${idx * 30}ms` }}
           >
             <div className="flex items-center gap-2 mb-1">
-              <span className="w-5 h-5 rounded-full bg-[hsl(var(--ark-amber)/0.15)] flex items-center justify-center text-[9px] font-bold text-[hsl(var(--ark-amber))]">
-                {msg.name[0]}
-              </span>
+              <div className="w-5 h-5 rounded-full bg-[hsl(var(--ark-amber)/0.15)] flex items-center justify-center overflow-hidden shrink-0">
+                {msg.avatar ? (
+                  <img src={msg.avatar} alt="" className="w-full h-full object-cover" />
+                ) : (
+                  <span className="text-[9px] font-bold text-[hsl(var(--ark-amber))]">{msg.name[0]}</span>
+                )}
+              </div>
               <span className="text-[10px] font-medium">{msg.name}</span>
+              {msg.role === "admin" && (
+                <span className="text-[8px] px-1 py-px rounded border border-[hsl(var(--ark-amber)/0.4)] text-[hsl(var(--ark-amber))] tracking-wider">管理</span>
+              )}
               <span className="text-[10px] text-muted-foreground/40 ml-auto">{msg.createdAt?.slice(0, 10)}</span>
             </div>
             <p className="text-xs text-muted-foreground/80 leading-relaxed">{msg.content}</p>

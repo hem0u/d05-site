@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
     const name = user?.name || "匿名"
 
     const msg = await addMessage(name, content, userId)
-    return NextResponse.json(msg)
+    return NextResponse.json({ ...msg, avatar: user?.avatar || null, role: user?.role || "user" })
   } catch (e) {
     console.error("[api/guestbook] POST failed:", e)
     return NextResponse.json({ error: "database unavailable" }, { status: 503 })

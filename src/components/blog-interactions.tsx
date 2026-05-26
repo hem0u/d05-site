@@ -86,7 +86,7 @@ type CommentType = {
   id: number
   content: string
   createdAt: string
-  user: { id: number; name: string; avatar: string | null }
+  user: { id: number; name: string; avatar: string | null; role: string }
 }
 
 export function BlogComments({ slug }: { slug: string }) {
@@ -169,6 +169,9 @@ export function BlogComments({ slug }: { slug: string }) {
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
                 <span className="text-xs font-medium">{c.user.name}</span>
+                {c.user.role === "admin" && (
+                  <span className="text-[8px] px-1 py-px rounded border border-[hsl(var(--ark-amber)/0.4)] text-[hsl(var(--ark-amber))] tracking-wider">管理</span>
+                )}
                 <span className="text-[10px] text-muted-foreground/40">
                   {new Date(c.createdAt).toLocaleDateString("zh-CN")}
                 </span>

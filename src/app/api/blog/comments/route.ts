@@ -10,6 +10,7 @@ export type Comment = {
     id: number
     name: string
     avatar: string | null
+    role: string
   }
 }
 
@@ -22,7 +23,7 @@ export async function GET(req: NextRequest) {
     const { rows } = await sql`
       SELECT
         c.id, c.content, c.created_at as "createdAt",
-        u.id as user_id, u.name as user_name, u.avatar as user_avatar
+        u.id as user_id, u.name as user_name, u.avatar as user_avatar, u.role as user_role
       FROM blog_comments c
       JOIN users u ON c.user_id = u.id
       WHERE c.post_slug = ${slug}
@@ -37,6 +38,7 @@ export async function GET(req: NextRequest) {
         id: r.user_id,
         name: r.user_name,
         avatar: r.user_avatar,
+        role: r.user_role || "user",
       },
     }))
     return NextResponse.json({ comments })
@@ -67,7 +69,7 @@ export async function POST(req: NextRequest) {
     `
 
     const userRes = await sql`
-      SELECT id, name, avatar FROM users WHERE id = ${userId}
+      SELECT id, name, avatar, role FROM users WHERE id = ${userId}
     `
 
     const comment: Comment = {
@@ -78,6 +80,7 @@ export async function POST(req: NextRequest) {
         id: userRes.rows[0].id,
         name: userRes.rows[0].name,
         avatar: userRes.rows[0].avatar,
+        role: userRes.rows[0].role || "user",
       },
     }
     return NextResponse.json({ comment })
