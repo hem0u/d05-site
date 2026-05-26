@@ -1,5 +1,5 @@
 const store = new Map<string, { data: unknown; ts: number }>()
-const TTL = 30_000 // 30 seconds
+const TTL = 300_000 // 5 minutes
 
 export function getCached<T>(key: string): T | null {
   const entry = store.get(key)

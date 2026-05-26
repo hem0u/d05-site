@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from "next/server"
 import { isAdmin } from "@/lib/auth"
-import { sql, ensureTables } from "@/lib/db"
+import { sql } from "@/lib/db"
 import { setCache } from "@/lib/api-cache"
 
 export async function GET() {
-  await ensureTables()
   if (!await isAdmin()) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
 
   try {

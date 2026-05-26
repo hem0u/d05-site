@@ -13,7 +13,6 @@ async function ensure() {
 }
 
 export async function GET(req: NextRequest) {
-  await ensure()
   const date = req.nextUrl.searchParams.get("date")
   if (!HAS_DB) return NextResponse.json({ schedules: [] })
   if (date) {
