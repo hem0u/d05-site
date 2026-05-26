@@ -76,37 +76,37 @@ export default function AdminPage() {
   const fetchBlogPosts = useCallback(async () => {
     const res = await fetch("/api/blog")
     const data = await res.json()
-    setBlogPosts(data.posts || data)
+    setBlogPosts(Array.isArray(data.posts) ? data.posts : [])
   }, [])
 
   const fetchDiary = useCallback(async () => {
     const res = await fetch("/api/diary")
     const data = await res.json()
-    setDiaryEntries(data.entries || data)
+    setDiaryEntries(Array.isArray(data.entries) ? data.entries : Array.isArray(data) ? data : [])
   }, [])
 
   const fetchSchedules = useCallback(async () => {
     const res = await fetch("/api/schedule")
     const data = await res.json()
-    setSchedules(data.schedules || data)
+    setSchedules(Array.isArray(data.schedules) ? data.schedules : [])
   }, [])
 
   const fetchHobbies = useCallback(async () => {
     const res = await fetch("/api/hobbies")
     const data = await res.json()
-    setHobbies(data.hobbies || data)
+    setHobbies(Array.isArray(data.hobbies) ? data.hobbies : [])
   }, [])
 
   const fetchFriends = useCallback(async () => {
     const res = await fetch("/api/friends")
     const data = await res.json()
-    setFriends(data.friends || data)
+    setFriends(Array.isArray(data.friends) ? data.friends : [])
   }, [])
 
   const fetchMessages = useCallback(async () => {
     const res = await fetch("/api/guestbook")
     const data = await res.json()
-    setMessages(data.messages || data)
+    setMessages(Array.isArray(data.messages) ? data.messages : [])
   }, [])
 
   const fetchUsers = useCallback(async () => {

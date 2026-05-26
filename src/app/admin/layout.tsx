@@ -1,9 +1,10 @@
 import { isAdmin, getCurrentUserId } from "@/lib/auth"
 import { redirect } from "next/navigation"
-import { sql } from "@/lib/db"
+import { sql, ensureTables } from "@/lib/db"
 import { HexGrid, Sparkles } from "@/components/decorations"
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
+  await ensureTables()
   const admin = await isAdmin()
   if (!admin) {
     // If no admin exists, promote the current logged-in user
