@@ -16,6 +16,12 @@ function today() {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`
 }
 
+function tomorrow() {
+  const d = new Date()
+  d.setDate(d.getDate() + 1)
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`
+}
+
 type Section = "dashboard" | "blog" | "records" | "schedule" | "hobbies" | "friends" | "guestbook" | "users" | "changelog"
 
 const sections: { key: Section; label: string; icon: React.ReactNode }[] = [
@@ -500,7 +506,7 @@ export default function AdminPage() {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h1 className="text-lg font-bold tracking-wider">日程管理</h1>
-              <button onClick={() => { setScheduleForm({ date: today(), content: "" }); setScheduleEditDate(null) }} className={btnPrimary}>新日程</button>
+              <button onClick={() => { setScheduleForm({ date: tomorrow(), content: "" }); setScheduleEditDate(null) }} className={btnPrimary}>新日程</button>
             </div>
 
             <div className="space-y-1">
