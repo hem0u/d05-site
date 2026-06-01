@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import Image from "next/image"
 import { BlogList } from "@/components/blog-list"
 import { ArkDiamond, HexGrid, Sparkles, CornerDeco, SakuraFlower, YuriBloom } from "@/components/decorations"
 
@@ -25,10 +26,12 @@ export default function BlogPage() {
       <div className="relative z-10 mx-auto max-w-4xl">
         {/* Header with ambient image background */}
         <div className="relative text-center mb-14 animate-slide-up overflow-hidden rounded-xl">
-          <img
+          <Image
             src="/images/art-05.jpg"
             alt=""
-            className="absolute inset-0 w-full h-full object-cover opacity-25 dark:opacity-15"
+            fill
+            sizes="100vw"
+            className="object-cover opacity-25 dark:opacity-15"
             style={{ filter: "blur(40px) saturate(0.8)" }}
           />
           <div className="absolute inset-0 bg-background/60" />

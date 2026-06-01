@@ -1,9 +1,12 @@
 "use client"
 
-import { useState } from "react"
+import { useState, Suspense } from "react"
 import Link from "next/link"
+import { useSearchParams } from "next/navigation"
 
-export default function LoginPage() {
+function LoginForm() {
+  const searchParams = useSearchParams()
+  const redirect = searchParams.get("redirect") || ""
   const [mode, setMode] = useState<"login" | "reset">("login")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -32,7 +35,9 @@ export default function LoginPage() {
         setError(data.error || "登录失败")
         return
       }
-      if (data.user?.role === "admin") {
+      if (redirect) {
+        window.location.href = redirect
+      } else if (data.user?.role === "admin") {
         window.location.href = "/admin"
       } else {
         window.location.href = "/"
@@ -203,5 +208,20 @@ export default function LoginPage() {
         )}
       </p>
     </div>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="p-6 rounded-2xl border border-border/20 bg-card/80 backdrop-blur-xl">
+        <div className="text-center">
+          <h1 className="font-serif text-2xl font-bold tracking-tight mb-1">登录</h1>
+          <div className="w-4 h-4 rounded-full border-2 border-border border-t-transparent animate-spin mx-auto mt-4" />
+        </div>
+      </div>
+    }>
+      <LoginForm />
+    </Suspense>
   )
 }

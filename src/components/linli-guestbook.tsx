@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react"
 import { Send } from "lucide-react"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 
 type Message = {
   id: number | string
@@ -14,6 +15,7 @@ type Message = {
 }
 
 export function LinliGuestbook() {
+  const pathname = usePathname()
   const [messages, setMessages] = useState<Message[]>([])
   const [text, setText] = useState("")
   const [sending, setSending] = useState(false)
@@ -82,7 +84,7 @@ export function LinliGuestbook() {
         <div className="text-center py-6">
           <p className="text-xs text-muted-foreground/40 mb-3">登录后才能留言</p>
           <Link
-            href="/login"
+            href={`/login?redirect=${encodeURIComponent(pathname)}`}
             className="inline-flex items-center gap-1 px-4 py-1.5 text-xs tracking-wider rounded-lg bg-[hsl(var(--ark-amber)/0.15)] text-[hsl(var(--ark-amber))] hover:bg-[hsl(var(--ark-amber)/0.25)] transition-colors"
           >
             去登录

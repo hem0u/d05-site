@@ -42,10 +42,11 @@ export function CalendarSchedule() {
   const [year, setYear] = useState(today.getFullYear())
   const [month, setMonth] = useState(today.getMonth())
   const [plans, setPlans] = useState<Map<string, string>>(new Map())
-  const [useApi, setUseApi] = useState(false)
+  const [error, setError] = useState(false)
   const [hovered, setHovered] = useState<string | null>(null)
 
   const fetchPlans = useCallback(async () => {
+    setError(false)
     try {
       const res = await fetch("/api/schedule")
       if (res.ok) {
@@ -54,19 +55,10 @@ export function CalendarSchedule() {
         const map = new Map<string, string>()
         list.forEach((p) => p.content && map.set(p.date, p.content))
         setPlans(map)
-        setUseApi(true)
         return
       }
     } catch {}
-    try {
-      const raw = localStorage.getItem("d05-schedules")
-      if (raw) {
-        const arr: Plan[] = JSON.parse(raw)
-        const map = new Map<string, string>()
-        arr.forEach((p) => p.content && map.set(p.date, p.content))
-        setPlans(map)
-      }
-    } catch {}
+    setError(true)
   }, [])
 
   useEffect(() => { fetchPlans() }, [fetchPlans])

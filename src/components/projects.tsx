@@ -1,4 +1,5 @@
 import { ExternalLink, Github } from "lucide-react"
+import Image from "next/image"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -42,10 +43,12 @@ export function Projects() {
             <Card key={project.title} className="group flex flex-col glass border-border/30 hover:border-[hsl(var(--ark-amber)/0.3)] transition-all duration-500">
               <CardHeader>
                 <div className="mb-4 h-40 rounded-sm bg-zinc-100 dark:bg-zinc-800/50 flex items-center justify-center transition-transform duration-500 group-hover:scale-[1.02] relative overflow-hidden border border-border/20">
-                  <img
+                  <Image
                     src={`/images/art-0${idx + 1}.jpg`}
                     alt={project.title}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    fill
+                    sizes="(max-width: 640px) 100vw, 50vw"
+                    className="object-cover transition-transform duration-700 group-hover:scale-110"
                     loading="lazy"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-zinc-900/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />

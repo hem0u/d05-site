@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { User, Shield } from "lucide-react"
 
 type UserInfo = {
@@ -12,6 +13,7 @@ type UserInfo = {
 }
 
 export function UserMenu() {
+  const pathname = usePathname()
   const [user, setUser] = useState<UserInfo | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -32,7 +34,7 @@ export function UserMenu() {
   if (!user) {
     return (
       <Link
-        href="/login"
+        href={`/login?redirect=${encodeURIComponent(pathname)}`}
         className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs tracking-wider rounded-lg border border-border/30 text-muted-foreground/60 hover:text-[hsl(var(--ark-amber))] hover:border-[hsl(var(--ark-amber)/0.4)] transition-all"
       >
         <User className="h-3 w-3" />

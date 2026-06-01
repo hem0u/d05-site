@@ -30,7 +30,7 @@ export function LikeButton({ slug }: { slug: string }) {
       if (!res.ok) {
         // Redirect to login if not authenticated
         if (res.status === 401) {
-          window.location.href = "/login"
+          window.location.href = "/login?redirect=" + encodeURIComponent(window.location.pathname + window.location.search)
           return
         }
         return
@@ -115,7 +115,7 @@ export function BlogComments({ slug }: { slug: string }) {
         body: JSON.stringify({ slug, content: text.trim() }),
       })
       if (res.status === 401) {
-        window.location.href = "/login"
+        window.location.href = "/login?redirect=" + encodeURIComponent(window.location.pathname + window.location.search)
         return
       }
       const data = await res.json()

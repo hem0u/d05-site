@@ -165,17 +165,36 @@ export default function AdminPage() {
     setStats(data)
   }, [])
 
+  // Track which sections have been loaded (lazy load data per tab)
+  const [loadedSections, setLoadedSections] = useState<Set<string>>(new Set())
+
+  // Load data for a specific section on first visit
+  const loadSection = useCallback((s: Section) => {
+    if (loadedSections.has(s)) return
+    setLoadedSections((prev) => new Set(prev).add(s))
+    switch (s) {
+      case "dashboard": fetchStats(); fetchBlogPosts(); fetchUsers(); break
+      case "blog": fetchBlogPosts(); break
+      case "records": fetchDiary(); break
+      case "schedule": fetchSchedules(); break
+      case "hobbies": fetchHobbies(); break
+      case "friends": fetchFriends(); break
+      case "guestbook": fetchMessages(); break
+      case "users": fetchUsers(); break
+      case "changelog": fetchChangelog(); break
+    }
+  }, [loadedSections, fetchStats, fetchBlogPosts, fetchUsers, fetchDiary, fetchSchedules, fetchHobbies, fetchFriends, fetchMessages, fetchChangelog])
+
+  // Load dashboard data on mount (default section)
   useEffect(() => {
-    fetchStats()
-    fetchBlogPosts()
-    fetchDiary()
-    fetchSchedules()
-    fetchHobbies()
-    fetchFriends()
-    fetchMessages()
-    fetchUsers()
-    fetchChangelog()
-  }, [])
+    loadSection("dashboard")
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Re-fetch when switching sections
+  const switchSection = useCallback((s: Section) => {
+    setSection(s)
+    loadSection(s)
+  }, [loadSection])
 
   // ---- Blog actions ----
   const deletePost = async (slug: string) => {
@@ -338,7 +357,7 @@ export default function AdminPage() {
             {sections.map((s) => (
               <button
                 key={s.key}
-                onClick={() => { setSection(s.key); setSidebarOpen(false) }}
+                onClick={() => { switchSection(s.key); setSidebarOpen(false) }}
                 className={`w-full flex items-center gap-2.5 px-3 py-2 text-xs tracking-wider rounded-lg transition-colors ${
                   section === s.key
                     ? "bg-[hsl(var(--ark-amber)/0.1)] text-[hsl(var(--ark-amber))]"

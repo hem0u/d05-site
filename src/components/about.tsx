@@ -1,6 +1,7 @@
 import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
 import { profile } from "@/data/profile"
+import Image from "next/image"
 import { Sparkles, DriftingPetals, CornerDeco, HexGrid, SakuraFlower, YuriBloom, ArkDiamond, ChibiFace, PairedStars } from "@/components/decorations"
 
 export function About() {
@@ -8,10 +9,12 @@ export function About() {
     <section id="about" className="relative min-h-screen flex flex-col justify-center py-20 px-4 sm:px-6 overflow-hidden vignette snap-start">
       {/* Ambient background image — subtle, blurred */}
       <div className="absolute inset-0 pointer-events-none">
-        <img
+        <Image
           src="/images/art-03.jpg"
           alt=""
-          className="absolute inset-0 w-full h-full object-cover opacity-20 dark:opacity-15"
+          fill
+          sizes="100vw"
+          className="object-cover opacity-20 dark:opacity-15"
           style={{ filter: "blur(60px) saturate(0.6)" }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-background/40" />

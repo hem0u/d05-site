@@ -11,38 +11,20 @@ type Message = {
   createdAt?: string
 }
 
-const STORAGE_KEY = "d05-guestbook-msgs"
-
-const preSeeded: Message[] = [
-  { id: "seed-1", name: "匿名博士", text: "罗德岛人事部发来贺电！网站很好看！", date: "2026-05-20" },
-  { id: "seed-2", name: "路过刀客塔", text: "同为舟批，握爪。下次合约一起摸轴。", date: "2026-05-19" },
-  { id: "seed-3", name: "ゆり好き", text: "页面风格真的太棒了，百合花开的感觉！", date: "2026-05-18" },
-]
-
-function loadLocal(): Message[] {
-  if (typeof window === "undefined") return preSeeded
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    if (raw) return JSON.parse(raw)
-  } catch {}
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(preSeeded))
-  return preSeeded
-}
-
 export function Guestbook() {
   const [messages, setMessages] = useState<Message[]>([])
   const [name, setName] = useState("")
   const [text, setText] = useState("")
   const [submitted, setSubmitted] = useState(false)
-  const [useApi, setUseApi] = useState(false)
+  const [error, setError] = useState(false)
 
   const fetchMessages = useCallback(async () => {
+    setError(false)
     try {
       const res = await fetch("/api/guestbook")
       if (res.ok) {
         const data = await res.json()
         if (Array.isArray(data) && data.length >= 0) {
-          setUseApi(true)
           setMessages((data as Array<{ id: number | string; name: string; content?: string; createdAt?: string }>).map((m) => ({
             id: m.id,
             name: m.name,
@@ -53,8 +35,7 @@ export function Guestbook() {
         }
       }
     } catch {}
-    // Fallback to localStorage
-    setMessages(loadLocal())
+    setError(true)
   }, [])
 
   useEffect(() => {
@@ -64,36 +45,21 @@ export function Guestbook() {
   const submit = async () => {
     if (!name.trim() || !text.trim()) return
 
-    if (useApi) {
-      try {
-        const res = await fetch("/api/guestbook", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name: name.trim(), content: text.trim() }),
-        })
-        if (res.ok) {
-          await fetchMessages()
-          setName("")
-          setText("")
-          setSubmitted(true)
-          setTimeout(() => setSubmitted(false), 2000)
-          return
-        }
-      } catch {}
-    }
-
-    // Local mode
-    const msg: Message = {
-      id: Date.now().toString(),
-      name: name.trim(),
-      text: text.trim(),
-      date: new Date().toISOString().slice(0, 10),
-    }
-    const updated = [msg, ...messages]
-    setMessages(updated)
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated))
-    setName("")
-    setText("")
+    try {
+      const res = await fetch("/api/guestbook", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: name.trim(), content: text.trim() }),
+      })
+      if (res.ok) {
+        await fetchMessages()
+        setName("")
+        setText("")
+        setSubmitted(true)
+        setTimeout(() => setSubmitted(false), 2000)
+        return
+      }
+    } catch {}
     setSubmitted(true)
     setTimeout(() => setSubmitted(false), 2000)
   }
@@ -133,6 +99,9 @@ export function Guestbook() {
       </div>
 
       {/* Messages */}
+      {error && messages.length === 0 && (
+        <p className="text-[10px] text-red-400/60 text-center py-6">数据加载失败，请稍后刷新重试</p>
+      )}
       <div className="space-y-3">
         {messages.map((msg, i) => (
           <div

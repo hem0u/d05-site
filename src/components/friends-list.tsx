@@ -33,7 +33,7 @@ export function FriendsList() {
             {/* Avatar */}
             <div className="w-14 h-14 rounded-full bg-muted/60 border border-border/30 flex items-center justify-center overflow-hidden mx-auto mb-3 group-hover:border-[hsl(var(--ark-amber)/0.3)] transition-colors duration-500">
               {friend.avatar ? (
-                <img src={friend.avatar} alt="" className="w-full h-full object-cover" />
+                <img src={friend.avatar} alt="" className="w-full h-full object-cover" loading="lazy" />
               ) : (
                 <span className="font-serif text-lg font-bold text-muted-foreground/50 group-hover:text-[hsl(var(--ark-amber)/0.6)] transition-colors duration-500">
                   {friend.name[0]}

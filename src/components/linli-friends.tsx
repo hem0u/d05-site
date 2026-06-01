@@ -33,7 +33,7 @@ export function LinliFriends() {
         >
           <div className="w-9 h-9 rounded-full bg-[hsl(var(--ark-blue)/0.15)] flex items-center justify-center text-xs font-bold text-[hsl(var(--ark-blue))] shrink-0">
             {friend.avatar ? (
-              <img src={friend.avatar} alt={friend.name} className="w-9 h-9 rounded-full object-cover" />
+              <img src={friend.avatar} alt={friend.name} className="w-9 h-9 rounded-full object-cover" loading="lazy" />
             ) : (
               friend.name[0]
             )}

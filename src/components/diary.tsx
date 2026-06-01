@@ -3,8 +3,6 @@
 import { useState, useEffect, useRef, useCallback } from "react"
 import {
   type DiaryEntry,
-  getAllEntries,
-  seedIfEmpty,
 } from "@/data/diary"
 
 /* ── SVG Curved Timeline ── */
@@ -113,8 +111,10 @@ export function Diary() {
   const [activeIdx, setActiveIdx] = useState(0)
   const scrollRef = useRef<HTMLDivElement>(null)
 
+  const [error, setError] = useState(false)
+
   const refresh = useCallback(async () => {
-    // Try API first
+    setError(false)
     try {
       const res = await fetch("/api/diary")
       if (res.ok) {
@@ -125,9 +125,7 @@ export function Diary() {
         }
       }
     } catch {}
-    // Fallback to localStorage
-    seedIfEmpty()
-    setEntries(getAllEntries())
+    setError(true)
   }, [])
 
   useEffect(() => {
@@ -172,6 +170,10 @@ export function Diary() {
         >
           {entries.length > 0 ? (
             <CurvedTimeline entries={entries} activeIdx={activeIdx} onSelectDate={handleSelectDate} />
+          ) : error ? (
+            <div className="flex items-center justify-center h-full">
+              <p className="text-[10px] text-red-400/60 tracking-wider text-center px-2">数据加载失败<br/>请稍后重试</p>
+            </div>
           ) : (
             <div className="flex items-center justify-center h-full">
               <p className="text-[10px] text-muted-foreground/20 tracking-wider">暂无记录</p>

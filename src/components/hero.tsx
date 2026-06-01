@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { ArrowDown, Github, MessageSquareText } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { profile } from "@/data/profile"
@@ -153,11 +154,14 @@ export function Hero() {
     <section id="hero" className="relative min-h-[calc(100vh-3.5rem)] flex flex-col items-center justify-center px-4 text-center overflow-hidden vignette snap-start">
       {/* Ambient background image */}
       <div className="absolute inset-0 pointer-events-none">
-        <img
+        <Image
           src="/images/art-01.jpg"
           alt=""
-          className="absolute inset-0 w-full h-full object-cover opacity-30 dark:opacity-20"
+          fill
+          sizes="100vw"
+          className="object-cover opacity-30 dark:opacity-20"
           style={{ filter: "blur(80px) saturate(0.8)", animation: "bg-drift 20s ease-in-out infinite alternate" }}
+          priority
         />
         <div className="absolute inset-0 bg-gradient-to-b from-background via-background/60 to-background" />
       </div>
