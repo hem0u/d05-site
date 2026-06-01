@@ -17,17 +17,21 @@ export async function comparePassword(password: string, hash: string): Promise<b
   return bcrypt.compare(password, hash)
 }
 
-export async function signToken(payload: { userId: number; role?: string }): Promise<string> {
-  return new SignJWT({ sub: String(payload.userId), role: payload.role ?? "user" })
+export async function signToken(payload: { userId: number; role?: string; tokenVersion?: number }): Promise<string> {
+  return new SignJWT({
+    sub: String(payload.userId),
+    role: payload.role ?? "user",
+    ver: payload.tokenVersion ?? 0,
+  })
     .setProtectedHeader({ alg: "HS256" })
     .setExpirationTime("7d")
     .sign(JWT_SECRET)
 }
 
-export async function verifyToken(token: string): Promise<number | null> {
+export async function verifyToken(token: string): Promise<{ userId: number; tokenVersion: number } | null> {
   try {
     const { payload } = await jwtVerify(token, JWT_SECRET)
-    return Number(payload.sub)
+    return { userId: Number(payload.sub), tokenVersion: Number(payload.ver ?? 0) }
   } catch {
     return null
   }
@@ -63,7 +67,16 @@ export async function getAuthToken(): Promise<string | null> {
 export async function getCurrentUserId(): Promise<number | null> {
   const token = await getAuthToken()
   if (!token) return null
-  return verifyToken(token)
+  const result = await verifyToken(token)
+  if (!result) return null
+  // Verify token_version hasn't been invalidated (e.g., password changed)
+  try {
+    const { rows } = await sql`SELECT token_version FROM users WHERE id = ${result.userId}`
+    if (rows.length === 0 || Number(rows[0].token_version) !== result.tokenVersion) return null
+  } catch {
+    // If DB is down, still allow the token (graceful degradation)
+  }
+  return result.userId
 }
 
 export async function getRoleFromToken(): Promise<string | null> {

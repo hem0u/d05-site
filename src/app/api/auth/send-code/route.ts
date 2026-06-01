@@ -2,8 +2,13 @@ import { NextRequest, NextResponse } from "next/server"
 import { ensureTables } from "@/lib/db"
 import { saveVerificationCode } from "@/lib/user-db"
 import { sendVerificationCode } from "@/lib/mail"
+import { rateLimit } from "@/lib/rate-limit"
 
 export async function POST(req: NextRequest) {
+  const ip = req.headers.get("x-forwarded-for") ?? "unknown"
+  const limit = rateLimit(ip, "send-code", 3, 60_000)
+  if (!limit.ok) return NextResponse.json({ error: "请求过于频繁，请稍后再试" }, { status: 429 })
+
   try {
     const { email } = await req.json()
     if (!email || !email.includes("@")) {

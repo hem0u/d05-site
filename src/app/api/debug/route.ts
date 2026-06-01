@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server"
+import { isAdmin } from "@/lib/auth"
 import { sql, HAS_DB } from "@/lib/db"
 
 export async function GET() {
+  if (!await isAdmin()) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
   if (!HAS_DB) return NextResponse.json({ error: "no database configured" }, { status: 500 })
 
   const results: Record<string, unknown> = {}

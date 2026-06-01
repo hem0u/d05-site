@@ -7,13 +7,14 @@ export type User = {
   avatar: string | null
   bio: string
   role: string
+  tokenVersion: number
   createdAt: string
 }
 
 export async function getUserById(id: number): Promise<User | null> {
   try {
     const { rows } = await sql`
-      SELECT id, email, name, avatar, bio, role, created_at as "createdAt"
+      SELECT id, email, name, avatar, bio, role, token_version as "tokenVersion", created_at as "createdAt"
       FROM users WHERE id = ${id}
     `
     if (rows.length === 0) return null
@@ -24,6 +25,7 @@ export async function getUserById(id: number): Promise<User | null> {
       avatar: rows[0].avatar,
       bio: rows[0].bio,
       role: rows[0].role,
+      tokenVersion: Number(rows[0].tokenVersion ?? 0),
       createdAt: rows[0].createdAt.toISOString(),
     }
   } catch (e) {
@@ -35,7 +37,7 @@ export async function getUserById(id: number): Promise<User | null> {
 export async function getUserByEmail(email: string): Promise<User | null> {
   try {
     const { rows } = await sql`
-      SELECT id, email, name, avatar, bio, role, created_at as "createdAt"
+      SELECT id, email, name, avatar, bio, role, token_version as "tokenVersion", created_at as "createdAt"
       FROM users WHERE email = ${email.toLowerCase()}
     `
     if (rows.length === 0) return null
@@ -46,6 +48,7 @@ export async function getUserByEmail(email: string): Promise<User | null> {
       avatar: rows[0].avatar,
       bio: rows[0].bio,
       role: rows[0].role,
+      tokenVersion: Number(rows[0].tokenVersion ?? 0),
       createdAt: rows[0].createdAt.toISOString(),
     }
   } catch (e) {
@@ -59,7 +62,7 @@ export async function createUser(email: string, name: string, passwordHash: stri
     const { rows } = await sql`
       INSERT INTO users (email, name, password_hash)
       VALUES (${email.toLowerCase()}, ${name}, ${passwordHash})
-      RETURNING id, email, name, avatar, bio, created_at as "createdAt"
+      RETURNING id, email, name, avatar, bio, role, token_version as "tokenVersion", created_at as "createdAt"
     `
     return {
       id: rows[0].id,
@@ -67,7 +70,8 @@ export async function createUser(email: string, name: string, passwordHash: stri
       name: rows[0].name,
       avatar: rows[0].avatar,
       bio: rows[0].bio,
-      role: rows[0].role,
+      role: rows[0].role ?? "user",
+      tokenVersion: Number(rows[0].tokenVersion ?? 0),
       createdAt: rows[0].createdAt.toISOString(),
     }
   } catch (e) {
@@ -102,7 +106,7 @@ export async function updateProfile(
 
     vals.push(id)
     const { rows } = await sql.query(
-      `UPDATE users SET ${sets.join(", ")} WHERE id = $${idx} RETURNING id, email, name, avatar, bio, created_at as "createdAt"`,
+      `UPDATE users SET ${sets.join(", ")} WHERE id = $${idx} RETURNING id, email, name, avatar, bio, role, token_version as "tokenVersion", created_at as "createdAt"`,
       vals,
     )
     if (rows.length === 0) return null
@@ -113,6 +117,7 @@ export async function updateProfile(
       avatar: rows[0].avatar,
       bio: rows[0].bio,
       role: rows[0].role,
+      tokenVersion: Number(rows[0].tokenVersion ?? 0),
       createdAt: rows[0].createdAt.toISOString(),
     }
   } catch (e) {

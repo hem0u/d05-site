@@ -1,9 +1,14 @@
 import { NextRequest, NextResponse } from "next/server"
 import { hashPassword } from "@/lib/auth"
 import { updatePassword, verifyCode } from "@/lib/user-db"
-import { ensureTables } from "@/lib/db"
+import { sql, ensureTables } from "@/lib/db"
+import { rateLimit } from "@/lib/rate-limit"
 
 export async function POST(req: NextRequest) {
+  const ip = req.headers.get("x-forwarded-for") ?? "unknown"
+  const limit = rateLimit(ip, "reset-password", 5, 60_000)
+  if (!limit.ok) return NextResponse.json({ error: "请求过于频繁，请稍后再试" }, { status: 429 })
+
   try {
     await ensureTables()
     const { email, code, password } = await req.json()
@@ -28,6 +33,11 @@ export async function POST(req: NextRequest) {
     if (!ok) {
       return NextResponse.json({ error: "密码修改失败，请重试" }, { status: 500 })
     }
+
+    // Invalidate all existing tokens by bumping token_version
+    try {
+      await sql`UPDATE users SET token_version = token_version + 1 WHERE email = ${email.toLowerCase()}`
+    } catch { /* non-critical */ }
 
     return NextResponse.json({ message: "密码修改成功" })
   } catch (e) {

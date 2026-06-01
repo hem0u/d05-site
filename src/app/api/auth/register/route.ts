@@ -2,8 +2,13 @@ import { NextRequest, NextResponse } from "next/server"
 import { hashPassword, signToken, setAuthCookie } from "@/lib/auth"
 import { createUser, getUserByEmail, verifyCode } from "@/lib/user-db"
 import { ensureTables, sql } from "@/lib/db"
+import { rateLimit } from "@/lib/rate-limit"
 
 export async function POST(req: NextRequest) {
+  const ip = req.headers.get("x-forwarded-for") ?? "unknown"
+  const limit = rateLimit(ip, "register", 3, 60_000)
+  if (!limit.ok) return NextResponse.json({ error: "请求过于频繁，请稍后再试" }, { status: 429 })
+
   try {
     await ensureTables()
     const { email, name, password, code } = await req.json()
@@ -47,7 +52,7 @@ export async function POST(req: NextRequest) {
       user.role = "admin"
     }
 
-    const token = await signToken({ userId: user.id, role: user.role })
+    const token = await signToken({ userId: user.id, role: user.role, tokenVersion: 0 })
     await setAuthCookie(token)
 
     return NextResponse.json({ user })
