@@ -8,6 +8,7 @@ export type ChangelogEntry = {
 }
 
 const fallback: ChangelogEntry[] = [
+  { id: 40, date: "2026-05-27", type: "fix", content: "安全加固：debug 路由加 admin 鉴权防信息泄露；token_version 机制使改密码后旧 JWT 自动失效；登录/注册/验证码接口添加频率限制防暴力破解" },
   { id: 39, date: "2026-05-27", type: "feat", content: "新增反馈问题功能：点击首页/页脚的反馈按钮弹出反馈表单，支持建议/问题/其他分类，数据存入 feedbacks 表" },
   { id: 38, date: "2026-05-27", type: "feat", content: "新增修改密码功能：个人页可通过邮箱验证码修改密码；登录页新增「忘记密码」入口，同样通过验证码重置密码" },
   { id: 37, date: "2026-05-27", type: "update", content: "大幅优化数据库查询速度：ensureTables 17 条串行 SQL 改为 Promise.all 并行执行（4s→0.5s）；API 缓存 TTL 从 30s 提升至 5min；GET 路由移除冗余表检查；新增 /api/keep-warm 保活端点" },
