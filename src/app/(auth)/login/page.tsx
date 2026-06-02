@@ -35,10 +35,11 @@ function LoginForm() {
         setError(data.error || "登录失败")
         return
       }
-      if (redirect) {
+      if (data.user?.role === "admin") {
+        // Admin: go to /admin unless there's a specific non-homepage redirect
+        window.location.href = (redirect && redirect !== "/") ? redirect : "/admin"
+      } else if (redirect) {
         window.location.href = redirect
-      } else if (data.user?.role === "admin") {
-        window.location.href = "/admin"
       } else {
         window.location.href = "/"
       }
