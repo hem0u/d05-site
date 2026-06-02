@@ -8,6 +8,7 @@ export type ChangelogEntry = {
 }
 
 const fallback: ChangelogEntry[] = [
+  { id: 43, date: "2026-06-02", type: "update", content: "全站加载/错误状态补全：日记时间轴、留言、日程日历、博客评论/点赞/浏览、首页 blog 统计、管理后台所有 tab 均加入 loading spinner 骨架屏；博客列表/评论区/用户菜单加入错误提示+重试按钮；管理后台日期字段改用 type=date 原生控件" },
   { id: 42, date: "2026-06-02", type: "fix", content: "修复写入操作假成功提示：留言失败不再显示「已发送」；管理后台所有删除/保存/角色变更操作改为先检查 res.ok 再提示结果（失败显示红色错误 toast）；5 个 API 写入路由补 try/catch（diary/hobbies/schedule）；9 个 GET 路由在数据库故障时返回 500 而非静默空数组，前端可区分「无数据」和「数据库挂了」" },
   { id: 41, date: "2026-06-01", type: "update", content: "日常体验优化：管理后台按 tab 懒加载数据（首屏快 ~3s）；记录/留言/日程移除 localStorage 兜底统一走 API；未登录跳转登录后自动回到原页面；静态背景图迁移到 next/image 优化加载" },
   { id: 40, date: "2026-05-27", type: "fix", content: "安全加固：debug 路由加 admin 鉴权防信息泄露；token_version 机制使改密码后旧 JWT 自动失效；登录/注册/验证码接口添加频率限制防暴力破解" },

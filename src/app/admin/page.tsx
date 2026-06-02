@@ -167,21 +167,39 @@ export default function AdminPage() {
 
   // Track which sections have been loaded (lazy load data per tab)
   const [loadedSections, setLoadedSections] = useState<Set<string>>(new Set())
+  // Track which sections are currently loading (counter for concurrent fetches like dashboard)
+  const [loadingSections, setLoadingSections] = useState<Map<string, number>>(new Map())
+
+  const markLoading = (s: string) => setLoadingSections((prev) => {
+    const n = new Map(prev)
+    n.set(s, (n.get(s) || 0) + 1)
+    return n
+  })
+  const unmarkLoading = (s: string) => setLoadingSections((prev) => {
+    const n = new Map(prev)
+    const count = (n.get(s) || 0) - 1
+    if (count <= 0) n.delete(s)
+    else n.set(s, count)
+    return n
+  })
 
   // Load data for a specific section on first visit
   const loadSection = useCallback((s: Section) => {
     if (loadedSections.has(s)) return
     setLoadedSections((prev) => new Set(prev).add(s))
+    markLoading(s)
+    // Wrap each fetch to unmark after completion
+    const wrap = (fn: () => Promise<void>) => fn().finally(() => unmarkLoading(s))
     switch (s) {
-      case "dashboard": fetchStats(); fetchBlogPosts(); fetchUsers(); break
-      case "blog": fetchBlogPosts(); break
-      case "records": fetchDiary(); break
-      case "schedule": fetchSchedules(); break
-      case "hobbies": fetchHobbies(); break
-      case "friends": fetchFriends(); break
-      case "guestbook": fetchMessages(); break
-      case "users": fetchUsers(); break
-      case "changelog": fetchChangelog(); break
+      case "dashboard": wrap(fetchStats); wrap(fetchBlogPosts); wrap(fetchUsers); break
+      case "blog": wrap(fetchBlogPosts); break
+      case "records": wrap(fetchDiary); break
+      case "schedule": wrap(fetchSchedules); break
+      case "hobbies": wrap(fetchHobbies); break
+      case "friends": wrap(fetchFriends); break
+      case "guestbook": wrap(fetchMessages); break
+      case "users": wrap(fetchUsers); break
+      case "changelog": wrap(fetchChangelog); break
     }
   }, [loadedSections, fetchStats, fetchBlogPosts, fetchUsers, fetchDiary, fetchSchedules, fetchHobbies, fetchFriends, fetchMessages, fetchChangelog])
 
@@ -445,7 +463,9 @@ export default function AdminPage() {
                   </div>
                 </div>
               ))}
-              {blogPosts.length === 0 && <p className="text-xs text-muted-foreground/30 py-8 text-center">暂无文章</p>}
+              {loadingSections.has("blog") ? (
+                <div className="flex justify-center py-12"><div className="w-5 h-5 rounded-full border-2 border-border border-t-[hsl(var(--ark-amber))] animate-spin" /></div>
+              ) : blogPosts.length === 0 && <p className="text-xs text-muted-foreground/30 py-8 text-center">暂无文章</p>}
             </div>
 
             {blogNew && (
@@ -478,14 +498,16 @@ export default function AdminPage() {
                   </div>
                 </div>
               ))}
-              {diaryEntries.length === 0 && <p className="text-xs text-muted-foreground/30 py-8 text-center">暂无记录</p>}
+              {loadingSections.has("records") ? (
+                <div className="flex justify-center py-12"><div className="w-5 h-5 rounded-full border-2 border-border border-t-[hsl(var(--ark-amber))] animate-spin" /></div>
+              ) : diaryEntries.length === 0 && <p className="text-xs text-muted-foreground/30 py-8 text-center">暂无记录</p>}
             </div>
 
             {(diaryNew || diaryEditing) && (
               <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/70 backdrop-blur-sm" onClick={() => { setDiaryNew(false); setDiaryEditing(null) }}>
                 <div className="p-6 rounded-2xl border border-border/20 bg-card/95 backdrop-blur-xl w-full max-w-lg mx-4 space-y-3" onClick={(e) => e.stopPropagation()}>
                   <h2 className="font-bold text-sm">{diaryEditing ? "编辑记录" : "新记录"}</h2>
-                  <input value={diaryForm.date} onChange={(e) => setDiaryForm({ ...diaryForm, date: e.target.value })} placeholder="日期 YYYY-MM-DD" className={inputClass} />
+                  <input type="date" value={diaryForm.date} onChange={(e) => setDiaryForm({ ...diaryForm, date: e.target.value })} className={inputClass} />
                   <textarea value={diaryForm.content} onChange={(e) => setDiaryForm({ ...diaryForm, content: e.target.value })} rows={4} placeholder="内容" className={inputClass} />
                   <div className="space-y-2">
                     <label className="text-[10px] text-muted-foreground/40">照片</label>
@@ -549,13 +571,15 @@ export default function AdminPage() {
                   </div>
                 </div>
               ))}
-              {schedules.length === 0 && <p className="text-xs text-muted-foreground/30 py-8 text-center">暂无日程</p>}
+              {loadingSections.has("schedule") ? (
+                <div className="flex justify-center py-12"><div className="w-5 h-5 rounded-full border-2 border-border border-t-[hsl(var(--ark-amber))] animate-spin" /></div>
+              ) : schedules.length === 0 && <p className="text-xs text-muted-foreground/30 py-8 text-center">暂无日程</p>}
             </div>
 
             {(scheduleEditDate !== null || scheduleForm.date) && (
               <div className="p-4 rounded-xl border border-border/20 bg-muted/5 space-y-3">
                 <h3 className="text-sm font-bold">{scheduleEditDate ? "编辑日程" : "新日程"}</h3>
-                <input value={scheduleForm.date} onChange={(e) => setScheduleForm({ ...scheduleForm, date: e.target.value })} placeholder="日期" className={inputClass} />
+                <input type="date" value={scheduleForm.date} onChange={(e) => setScheduleForm({ ...scheduleForm, date: e.target.value })} className={inputClass} />
                 <textarea value={scheduleForm.content} onChange={(e) => setScheduleForm({ ...scheduleForm, content: e.target.value })} rows={3} placeholder="内容" className={inputClass} />
                 <div className="flex gap-2">
                   <button onClick={saveSchedule} className={btnPrimary}>保存</button>
@@ -592,7 +616,9 @@ export default function AdminPage() {
                   </div>
                 </div>
               ))}
-              {hobbies.length === 0 && <p className="text-xs text-muted-foreground/30 py-8 text-center">暂无可管理的好物</p>}
+              {loadingSections.has("hobbies") ? (
+                <div className="flex justify-center py-12"><div className="w-5 h-5 rounded-full border-2 border-border border-t-[hsl(var(--ark-amber))] animate-spin" /></div>
+              ) : hobbies.length === 0 && <p className="text-xs text-muted-foreground/30 py-8 text-center">暂无可管理的好物</p>}
             </div>
 
             {hobbyNew && (
@@ -628,7 +654,9 @@ export default function AdminPage() {
                   </div>
                 </div>
               ))}
-              {friends.length === 0 && <p className="text-xs text-muted-foreground/30 py-8 text-center">暂无友链</p>}
+              {loadingSections.has("friends") ? (
+                <div className="flex justify-center py-12"><div className="w-5 h-5 rounded-full border-2 border-border border-t-[hsl(var(--ark-amber))] animate-spin" /></div>
+              ) : friends.length === 0 && <p className="text-xs text-muted-foreground/30 py-8 text-center">暂无友链</p>}
             </div>
 
             {(friendEditName !== null || (friendForm.name && friendForm.url)) && (
@@ -666,7 +694,9 @@ export default function AdminPage() {
                   </button>
                 </div>
               ))}
-              {messages.length === 0 && <p className="text-xs text-muted-foreground/30 py-8 text-center">暂无留言</p>}
+              {loadingSections.has("guestbook") ? (
+                <div className="flex justify-center py-12"><div className="w-5 h-5 rounded-full border-2 border-border border-t-[hsl(var(--ark-amber))] animate-spin" /></div>
+              ) : messages.length === 0 && <p className="text-xs text-muted-foreground/30 py-8 text-center">暂无留言</p>}
             </div>
           </div>
         )}
@@ -711,7 +741,9 @@ export default function AdminPage() {
                   ))}
                 </tbody>
               </table>
-              {users.length === 0 && <p className="text-xs text-muted-foreground/30 py-8 text-center">暂无用户</p>}
+              {loadingSections.has("users") ? (
+                <div className="flex justify-center py-12"><div className="w-5 h-5 rounded-full border-2 border-border border-t-[hsl(var(--ark-amber))] animate-spin" /></div>
+              ) : users.length === 0 && <p className="text-xs text-muted-foreground/30 py-8 text-center">暂无用户</p>}
             </div>
           </div>
         )}
@@ -723,7 +755,7 @@ export default function AdminPage() {
 
             <div className="p-4 rounded-xl border border-border/20 bg-muted/5 space-y-3">
               <div className="flex gap-2">
-                <input value={clForm.date} onChange={(e) => setClForm({ ...clForm, date: e.target.value })} placeholder="日期" className={`${inputClass} w-32`} />
+                <input type="date" value={clForm.date} onChange={(e) => setClForm({ ...clForm, date: e.target.value })} className={`${inputClass} w-32`} />
                 <select value={clForm.type} onChange={(e) => setClForm({ ...clForm, type: e.target.value as any })} className={`${inputClass} w-24`}>
                   <option value="feat">feat</option>
                   <option value="fix">fix</option>
@@ -760,7 +792,9 @@ export default function AdminPage() {
                   </button>
                 </div>
               ))}
-              {changelog.length === 0 && <p className="text-xs text-muted-foreground/30 py-8 text-center">暂无记录</p>}
+              {loadingSections.has("changelog") ? (
+                <div className="flex justify-center py-12"><div className="w-5 h-5 rounded-full border-2 border-border border-t-[hsl(var(--ark-amber))] animate-spin" /></div>
+              ) : changelog.length === 0 && <p className="text-xs text-muted-foreground/30 py-8 text-center">暂无记录</p>}
             </div>
           </div>
         )}

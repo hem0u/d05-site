@@ -111,9 +111,11 @@ export function Diary() {
   const [activeIdx, setActiveIdx] = useState(0)
   const scrollRef = useRef<HTMLDivElement>(null)
 
+  const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
 
   const refresh = useCallback(async () => {
+    setLoading(true)
     setError(false)
     try {
       const res = await fetch("/api/diary")
@@ -121,11 +123,13 @@ export function Diary() {
         const data = await res.json()
         if (Array.isArray(data)) {
           setEntries(data)
+          setLoading(false)
           return
         }
       }
     } catch {}
     setError(true)
+    setLoading(false)
   }, [])
 
   useEffect(() => {
@@ -168,7 +172,11 @@ export function Diary() {
           className="h-[calc(100vh-8rem)] overflow-y-auto [&::-webkit-scrollbar]:hidden"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
-          {entries.length > 0 ? (
+          {loading ? (
+            <div className="flex items-center justify-center h-full">
+              <div className="w-5 h-5 rounded-full border-2 border-border border-t-[hsl(var(--ark-amber))] animate-spin" />
+            </div>
+          ) : entries.length > 0 ? (
             <CurvedTimeline entries={entries} activeIdx={activeIdx} onSelectDate={handleSelectDate} />
           ) : error ? (
             <div className="flex items-center justify-center h-full">

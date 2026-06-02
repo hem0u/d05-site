@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
+import { ListSkeleton } from "@/components/skeleton"
 
 type Message = {
   id: number | string
@@ -16,9 +17,11 @@ export function Guestbook() {
   const [name, setName] = useState("")
   const [text, setText] = useState("")
   const [submitted, setSubmitted] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
 
   const fetchMessages = useCallback(async () => {
+    setLoading(true)
     setError(false)
     try {
       const res = await fetch("/api/guestbook")
@@ -36,6 +39,7 @@ export function Guestbook() {
       }
     } catch {}
     setError(true)
+    setLoading(false)
   }, [])
 
   useEffect(() => {
@@ -100,9 +104,11 @@ export function Guestbook() {
       </div>
 
       {/* Messages */}
-      {error && messages.length === 0 && (
+      {loading ? (
+        <ListSkeleton count={4} />
+      ) : error && messages.length === 0 ? (
         <p className="text-[10px] text-red-400/60 text-center py-6">数据加载失败，请稍后刷新重试</p>
-      )}
+      ) : (
       <div className="space-y-3">
         {messages.map((msg, i) => (
           <div
@@ -121,6 +127,7 @@ export function Guestbook() {
           </div>
         ))}
       </div>
+      )}
     </div>
   )
 }

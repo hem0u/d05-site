@@ -13,17 +13,25 @@ export function BlogList() {
   const router = useRouter()
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
   const [activeTag, setActiveTag] = useState<string | null>(null)
   const [query, setQuery] = useState("")
   const [page, setPage] = useState(1)
 
-  useEffect(() => {
+  const fetchPosts = () => {
+    setLoading(true)
+    setError(false)
     fetch("/api/blog")
-      .then((r) => r.json())
+      .then((r) => {
+        if (!r.ok) throw new Error()
+        return r.json()
+      })
       .then((data) => setBlogPosts(Array.isArray(data.posts) ? data.posts : []))
-      .catch(() => {})
+      .catch(() => setError(true))
       .finally(() => setLoading(false))
-  }, [])
+  }
+
+  useEffect(() => { fetchPosts() }, [])
 
   const allTags = useMemo(
     () => Array.from(new Set(blogPosts.flatMap((p) => p.tags))).sort(),
@@ -120,6 +128,12 @@ export function BlogList() {
       {/* Results */}
       {loading ? (
         <BlogSkeleton />
+      ) : error ? (
+        <div className="text-center py-20">
+          <p className="text-5xl mb-3 opacity-30">&#9888;</p>
+          <p className="text-muted-foreground/60 text-sm">数据加载失败</p>
+          <button onClick={fetchPosts} className="mt-4 px-4 py-1.5 text-xs rounded-full border border-[hsl(var(--ark-amber)/0.3)] text-[hsl(var(--ark-amber))] hover:bg-[hsl(var(--ark-amber)/0.06)] transition-colors">重新加载</button>
+        </div>
       ) : filtered.length === 0 ? (
         <div className="text-center py-20">
           {blogPosts.length === 0 ? (

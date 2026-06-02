@@ -58,7 +58,7 @@ export function LikeButton({ slug }: { slug: string }) {
 
 // ── View Counter ──
 export function ViewCounter({ slug }: { slug: string }) {
-  const [count, setCount] = useState(0)
+  const [count, setCount] = useState<number | null>(null)
 
   useEffect(() => {
     fetch(`/api/blog/views?slug=${slug}`)
@@ -76,7 +76,7 @@ export function ViewCounter({ slug }: { slug: string }) {
   return (
     <span className="inline-flex items-center gap-1 text-xs text-muted-foreground/50">
       <Eye className="h-3.5 w-3.5" />
-      {count}
+      {count === null ? "..." : count}
     </span>
   )
 }
@@ -93,13 +93,19 @@ export function BlogComments({ slug }: { slug: string }) {
   const [comments, setComments] = useState<CommentType[]>([])
   const [text, setText] = useState("")
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
   const [sending, setSending] = useState(false)
 
   const fetchComments = useCallback(() => {
+    setLoading(true)
+    setError(false)
     fetch(`/api/blog/comments?slug=${slug}`)
-      .then((r) => r.json())
-      .then((d) => setComments(d.comments))
-      .catch(() => {})
+      .then((r) => {
+        if (!r.ok) throw new Error()
+        return r.json()
+      })
+      .then((d) => setComments(Array.isArray(d.comments) ? d.comments : []))
+      .catch(() => setError(true))
       .finally(() => setLoading(false))
   }, [slug])
 
@@ -157,7 +163,17 @@ export function BlogComments({ slug }: { slug: string }) {
 
       {/* Comments list */}
       <div className="space-y-3">
-        {comments.map((c) => (
+        {loading ? (
+          <p className="text-[10px] text-muted-foreground/20 text-center py-6">加载评论中...</p>
+        ) : error ? (
+          <div className="text-center py-4">
+            <p className="text-[10px] text-red-400/60">评论加载失败</p>
+            <button onClick={fetchComments} className="mt-2 text-[10px] text-[hsl(var(--ark-amber))] hover:underline">点击重试</button>
+          </div>
+        ) : comments.length === 0 ? (
+          <p className="text-xs text-muted-foreground/30 text-center py-4">暂无评论</p>
+        ) : (
+          comments.map((c) => (
           <div key={c.id} className="flex gap-3">
             <div className="w-6 h-6 rounded-full bg-[hsl(var(--ark-blue)/0.1)] flex items-center justify-center shrink-0">
               {c.user.avatar ? (
@@ -179,9 +195,7 @@ export function BlogComments({ slug }: { slug: string }) {
               <p className="text-xs text-muted-foreground/70 mt-0.5 leading-relaxed">{c.content}</p>
             </div>
           </div>
-        ))}
-        {!loading && comments.length === 0 && (
-          <p className="text-xs text-muted-foreground/30 text-center py-4">暂无评论</p>
+        ))
         )}
       </div>
     </div>

@@ -42,10 +42,12 @@ export function CalendarSchedule() {
   const [year, setYear] = useState(today.getFullYear())
   const [month, setMonth] = useState(today.getMonth())
   const [plans, setPlans] = useState<Map<string, string>>(new Map())
+  const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
   const [hovered, setHovered] = useState<string | null>(null)
 
   const fetchPlans = useCallback(async () => {
+    setLoading(true)
     setError(false)
     try {
       const res = await fetch("/api/schedule")
@@ -55,10 +57,12 @@ export function CalendarSchedule() {
         const map = new Map<string, string>()
         list.forEach((p) => p.content && map.set(p.date, p.content))
         setPlans(map)
+        setLoading(false)
         return
       }
     } catch {}
     setError(true)
+    setLoading(false)
   }, [])
 
   useEffect(() => { fetchPlans() }, [fetchPlans])
@@ -72,6 +76,7 @@ export function CalendarSchedule() {
         <button
           onClick={() => month === 0 ? (setMonth(11), setYear(y => y - 1)) : setMonth(m => m - 1)}
           className="p-1.5 rounded-lg hover:bg-muted/30 text-muted-foreground hover:text-foreground transition-colors"
+          aria-label="上个月"
         >
           <ChevronLeft className="h-5 w-5" />
         </button>
@@ -81,6 +86,7 @@ export function CalendarSchedule() {
         <button
           onClick={() => month === 11 ? (setMonth(0), setYear(y => y + 1)) : setMonth(m => m + 1)}
           className="p-1.5 rounded-lg hover:bg-muted/30 text-muted-foreground hover:text-foreground transition-colors"
+          aria-label="下个月"
         >
           <ChevronRight className="h-5 w-5" />
         </button>
@@ -95,6 +101,18 @@ export function CalendarSchedule() {
         ))}
       </div>
 
+      {/* Loading / Error / Empty */}
+      {loading ? (
+        <div className="flex items-center justify-center py-20">
+          <div className="w-6 h-6 rounded-full border-2 border-border border-t-[hsl(var(--ark-amber))] animate-spin" />
+        </div>
+      ) : error ? (
+        <div className="text-center py-16">
+          <p className="text-sm text-red-400/60">数据加载失败</p>
+          <button onClick={fetchPlans} className="mt-3 text-xs text-[hsl(var(--ark-amber))] hover:underline">点击重试</button>
+        </div>
+      ) : (
+      <>
       {/* Calendar grid */}
       <div className="grid grid-cols-7 border-t border-l border-border/10 rounded-xl">
         {cells.map((day) => {
@@ -136,7 +154,8 @@ export function CalendarSchedule() {
           return cell
         })}
       </div>
-
+      </>
+      )}
     </div>
   )
 }

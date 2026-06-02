@@ -120,7 +120,7 @@ function calcDays(siteStart: string | undefined): number {
 export function Hero() {
   const [daysRunning, setDaysRunning] = useState(() => calcDays(profile.siteStart))
   const [latestPost, setLatestPost] = useState<{ title: string; slug: string } | null>(null)
-  const [blogCount, setBlogCount] = useState(0)
+  const [blogCount, setBlogCount] = useState<number | null>(null)
   const [feedbackOpen, setFeedbackOpen] = useState(false)
 
   useEffect(() => {
@@ -217,7 +217,7 @@ export function Hero() {
               <div key={stat.label} className="flex items-center gap-3">
                 <div className="w-4 h-px bg-amber-400/60" />
                 <div>
-                  <span className="font-mono text-xl font-bold text-amber-400/80 tabular-nums">{stat.value}</span>
+                  <span className="font-mono text-xl font-bold text-amber-400/80 tabular-nums">{stat.value === null ? "..." : stat.value}</span>
                   <span className="text-[9px] text-muted-foreground tracking-wider ml-2">{stat.label}</span>
                 </div>
               </div>
@@ -228,7 +228,9 @@ export function Hero() {
         {/* Right edge: latest post + nav */}
         <div className="hidden lg:block absolute right-6 top-1/2 -translate-y-1/2 pointer-events-auto z-10">
           <div className="flex flex-col gap-5 opacity-35" style={{ animation: "fade-slide-up 0.6s ease-out 0.4s both" }}>
-            {latestPost && (
+            {latestPost === null && blogCount !== null ? (
+              <p className="text-[9px] text-muted-foreground/30 tracking-[0.2em] uppercase text-right">No Posts Yet</p>
+            ) : !latestPost ? null : (
               <a href={`/blog/${latestPost.slug}`} className="group text-right hover:opacity-100 transition-opacity pointer-events-auto">
                 <p className="text-[9px] text-muted-foreground tracking-[0.2em] uppercase mb-1.5">Latest Post</p>
                 <p className="text-xs text-muted-foreground/70 group-hover:text-[hsl(var(--ark-blue))] transition-colors max-w-[160px] ml-auto leading-relaxed">

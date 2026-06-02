@@ -16,14 +16,18 @@ export function UserMenu() {
   const pathname = usePathname()
   const [user, setUser] = useState<UserInfo | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
 
   useEffect(() => {
     fetch("/api/auth/me")
-      .then((r) => r.json())
+      .then((r) => {
+        if (!r.ok) throw new Error()
+        return r.json()
+      })
       .then((data) => {
         if (data.user) setUser(data.user)
       })
-      .catch(() => {})
+      .catch(() => setError(true))
       .finally(() => setLoading(false))
   }, [])
 
@@ -35,7 +39,9 @@ export function UserMenu() {
     return (
       <Link
         href={`/login?redirect=${encodeURIComponent(pathname)}`}
-        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs tracking-wider rounded-lg border border-border/30 text-muted-foreground/60 hover:text-[hsl(var(--ark-amber))] hover:border-[hsl(var(--ark-amber)/0.4)] transition-all"
+        className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs tracking-wider rounded-lg border transition-all ${
+          error ? "border-red-400/20 text-red-400/60" : "border-border/30 text-muted-foreground/60 hover:text-[hsl(var(--ark-amber))] hover:border-[hsl(var(--ark-amber)/0.4)]"
+        }`}
       >
         <User className="h-3 w-3" />
         登录
