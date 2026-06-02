@@ -33,24 +33,34 @@ export async function POST(req: NextRequest) {
   if (!await isAdmin()) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
   await ensure()
   if (!HAS_DB) return NextResponse.json({ error: "no database" }, { status: 503 })
-  const { date, content } = await req.json()
-  if (!date) return NextResponse.json({ error: "date required" }, { status: 400 })
-  await sql`
-    INSERT INTO schedules (date, content)
-    VALUES (${date}, ${content || ""})
-    ON CONFLICT (date) DO UPDATE SET content = EXCLUDED.content
-  `
-  setCache("schedules", null)
-  return NextResponse.json({ ok: true })
+  try {
+    const { date, content } = await req.json()
+    if (!date) return NextResponse.json({ error: "date required" }, { status: 400 })
+    await sql`
+      INSERT INTO schedules (date, content)
+      VALUES (${date}, ${content || ""})
+      ON CONFLICT (date) DO UPDATE SET content = EXCLUDED.content
+    `
+    setCache("schedules", null)
+    return NextResponse.json({ ok: true })
+  } catch (e) {
+    console.error("[api/schedule] POST failed:", e)
+    return NextResponse.json({ error: "数据库写入失败" }, { status: 500 })
+  }
 }
 
 export async function DELETE(req: NextRequest) {
   if (!await isAdmin()) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
   await ensure()
   if (!HAS_DB) return NextResponse.json({ error: "no database" }, { status: 503 })
-  const { date } = await req.json()
-  if (!date) return NextResponse.json({ error: "date required" }, { status: 400 })
-  await sql`DELETE FROM schedules WHERE date = ${date}`
-  setCache("schedules", null)
-  return NextResponse.json({ ok: true })
+  try {
+    const { date } = await req.json()
+    if (!date) return NextResponse.json({ error: "date required" }, { status: 400 })
+    await sql`DELETE FROM schedules WHERE date = ${date}`
+    setCache("schedules", null)
+    return NextResponse.json({ ok: true })
+  } catch (e) {
+    console.error("[api/schedule] DELETE failed:", e)
+    return NextResponse.json({ error: "数据库删除失败" }, { status: 500 })
+  }
 }

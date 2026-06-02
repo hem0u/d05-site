@@ -79,9 +79,9 @@ export default function AdminPage() {
   const [changelog, setChangelog] = useState<any[]>([])
   const [clForm, setClForm] = useState({ date: today(), content: "", type: "update" as "fix" | "feat" | "update" })
 
-  const toast = (text: string) => {
-    setMsg(text)
-    setTimeout(() => setMsg(""), 2000)
+  const toast = (text: string, variant?: "error") => {
+    setMsg(variant === "error" ? `⚠ ${text}` : text)
+    setTimeout(() => setMsg(""), 2500)
   }
 
   const handleDiaryPhoto = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -199,8 +199,8 @@ export default function AdminPage() {
   // ---- Blog actions ----
   const deletePost = async (slug: string) => {
     if (!confirm("确定删除这篇文章？")) return
-    await fetch(`/api/blog/${slug}`, { method: "DELETE" })
-    toast("已删除")
+    const res = await fetch(`/api/blog/${slug}`, { method: "DELETE" })
+    toast(res.ok ? "已删除" : "删除失败", res.ok ? undefined : "error")
     fetchBlogPosts()
   }
 
@@ -216,17 +216,19 @@ export default function AdminPage() {
       setDiaryNew(false)
       setDiaryEditing(null)
       fetchDiary()
+    } else {
+      toast("保存失败", "error")
     }
   }
 
   const deleteDiary = async (date: string) => {
     if (!confirm("确定删除这条记录？")) return
-    await fetch("/api/diary", {
+    const res = await fetch("/api/diary", {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ date }),
     })
-    toast("已删除")
+    toast(res.ok ? "已删除" : "删除失败", res.ok ? undefined : "error")
     fetchDiary()
   }
 
@@ -242,17 +244,19 @@ export default function AdminPage() {
       setScheduleForm({ date: "", content: "" })
       setScheduleEditDate(null)
       fetchSchedules()
+    } else {
+      toast("保存失败", "error")
     }
   }
 
   const deleteSchedule = async (date: string) => {
     if (!confirm("确定删除？")) return
-    await fetch("/api/schedule", {
+    const res = await fetch("/api/schedule", {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ date }),
     })
-    toast("已删除")
+    toast(res.ok ? "已删除" : "删除失败", res.ok ? undefined : "error")
     fetchSchedules()
   }
 
@@ -268,39 +272,41 @@ export default function AdminPage() {
       setFriendForm({ name: "", url: "", description: "", avatar: "" })
       setFriendEditName(null)
       fetchFriends()
+    } else {
+      toast("保存失败", "error")
     }
   }
 
   const deleteFriend = async (name: string) => {
     if (!confirm("确定删除？")) return
-    await fetch(`/api/friends?name=${encodeURIComponent(name)}`, { method: "DELETE" })
-    toast("已删除")
+    const res = await fetch(`/api/friends?name=${encodeURIComponent(name)}`, { method: "DELETE" })
+    toast(res.ok ? "已删除" : "删除失败", res.ok ? undefined : "error")
     fetchFriends()
   }
 
   // ---- Guestbook actions ----
   const deleteMessage = async (id: number) => {
     if (!confirm("确定删除这条留言？")) return
-    await fetch(`/api/guestbook?id=${id}`, { method: "DELETE" })
-    toast("已删除")
+    const res = await fetch(`/api/guestbook?id=${id}`, { method: "DELETE" })
+    toast(res.ok ? "已删除" : "删除失败", res.ok ? undefined : "error")
     fetchMessages()
   }
 
   // ---- User actions ----
   const setUserRole = async (userId: number, role: string) => {
-    await fetch("/api/admin/users", {
+    const res = await fetch("/api/admin/users", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ userId, role }),
     })
-    toast("角色已更新")
+    toast(res.ok ? "角色已更新" : "更新失败", res.ok ? undefined : "error")
     fetchUsers()
   }
 
   const deleteUser = async (userId: number) => {
     if (!confirm("确定删除该用户？此操作不可撤销。")) return
-    await fetch(`/api/admin/users?id=${userId}`, { method: "DELETE" })
-    toast("用户已删除")
+    const res = await fetch(`/api/admin/users?id=${userId}`, { method: "DELETE" })
+    toast(res.ok ? "用户已删除" : "删除失败", res.ok ? undefined : "error")
     fetchUsers()
   }
 
@@ -315,6 +321,8 @@ export default function AdminPage() {
       toast("已添加")
       setClForm({ date: today(), content: "", type: "update" })
       fetchChangelog()
+    } else {
+      toast("添加失败", "error")
     }
   }
 
@@ -577,8 +585,8 @@ export default function AdminPage() {
                     <button onClick={() => setHobbyEditing(h)} className={btnClass}>编辑</button>
                     <button onClick={async () => {
                       if (!confirm("确定删除？")) return
-                      await fetch(`/api/hobbies/${h.id}`, { method: "DELETE" })
-                      toast("已删除")
+                      const res = await fetch(`/api/hobbies/${h.id}`, { method: "DELETE" })
+                      toast(res.ok ? "已删除" : "删除失败", res.ok ? undefined : "error")
                       fetchHobbies()
                     }} className={btnClass}>删除</button>
                   </div>
@@ -744,8 +752,8 @@ export default function AdminPage() {
                   </div>
                   <button onClick={async () => {
                     if (!confirm("确定删除？")) return
-                    await fetch(`/api/admin/changelog?id=${e.id}`, { method: "DELETE" })
-                    toast("已删除")
+                    const res = await fetch(`/api/admin/changelog?id=${e.id}`, { method: "DELETE" })
+                    toast(res.ok ? "已删除" : "删除失败", res.ok ? undefined : "error")
                     fetchChangelog()
                   }} className={`${btnClass} shrink-0 ml-3`}>
                     <Trash2 className="h-3 w-3" />

@@ -11,8 +11,9 @@ export async function GET() {
       SELECT id, date, content, type FROM changelog ORDER BY date DESC, id DESC LIMIT 50
     `
     return NextResponse.json({ entries: rows })
-  } catch {
-    return NextResponse.json({ entries: [] })
+  } catch (e) {
+    console.error("[api/admin/changelog] GET failed:", e)
+    return NextResponse.json({ error: "数据库查询失败" }, { status: 500 })
   }
 }
 

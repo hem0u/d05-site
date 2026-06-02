@@ -11,7 +11,8 @@ export async function GET() {
     const data = { entries }
     setCache("changelog", data)
     return NextResponse.json(data)
-  } catch {
-    return NextResponse.json({ entries: [] })
+  } catch (e) {
+    console.error("[api/changelog] GET failed:", e)
+    return NextResponse.json({ error: "数据库查询失败" }, { status: 500 })
   }
 }

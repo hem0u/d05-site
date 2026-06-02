@@ -60,8 +60,9 @@ export function Guestbook() {
         return
       }
     } catch {}
-    setSubmitted(true)
-    setTimeout(() => setSubmitted(false), 2000)
+    // API failed — show error, not fake success
+    setError(true)
+    setTimeout(() => setError(false), 3000)
   }
 
   return (
@@ -93,7 +94,7 @@ export function Guestbook() {
             disabled={!name.trim() || !text.trim()}
             className="px-4 py-1.5 text-xs tracking-widest uppercase rounded-full border border-[hsl(var(--ark-amber)/0.3)] text-[hsl(var(--ark-amber))] hover:bg-[hsl(var(--ark-amber)/0.06)] transition-all disabled:opacity-20 disabled:cursor-not-allowed"
           >
-            {submitted ? "已发送 ✦" : "留下痕迹"}
+            {error ? "发送失败 ✦" : submitted ? "已发送 ✦" : "留下痕迹"}
           </button>
         </div>
       </div>

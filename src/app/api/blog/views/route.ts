@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true })
   } catch (e) {
     console.error("[api/views] POST failed:", e)
-    return NextResponse.json({ ok: false })
+    return NextResponse.json({ error: "服务器错误" }, { status: 500 })
   }
 }
 
@@ -28,7 +28,8 @@ export async function GET(req: NextRequest) {
       SELECT count FROM blog_views WHERE post_slug = ${slug}
     `
     return NextResponse.json({ count: rows.length > 0 ? Number(rows[0].count) : 0 })
-  } catch {
-    return NextResponse.json({ count: 0 })
+  } catch (e) {
+    console.error("[api/views] GET failed:", e)
+    return NextResponse.json({ error: "数据库查询失败" }, { status: 500 })
   }
 }

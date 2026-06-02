@@ -19,7 +19,8 @@ export async function GET() {
       messages: Number(messages.rows[0].c),
       users: Number(users.rows[0].c),
     })
-  } catch {
-    return NextResponse.json({ posts: 0, comments: 0, messages: 0, users: 0 })
+  } catch (e) {
+    console.error("[api/admin/stats] GET failed:", e)
+    return NextResponse.json({ error: "数据库查询失败" }, { status: 500 })
   }
 }

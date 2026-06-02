@@ -44,7 +44,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ comments })
   } catch (e) {
     console.error("[api/comments] GET failed:", e)
-    return NextResponse.json({ comments: [] })
+    return NextResponse.json({ error: "数据库查询失败" }, { status: 500 })
   }
 }
 

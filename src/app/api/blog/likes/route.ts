@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
       })
     } catch (e) {
       console.error("[api/likes] user posts failed:", e)
-      return NextResponse.json({ posts: [] })
+      return NextResponse.json({ error: "数据库查询失败" }, { status: 500 })
     }
   }
 
@@ -48,7 +48,7 @@ export async function GET(req: NextRequest) {
     })
   } catch (e) {
     console.error("[api/likes] GET failed:", e)
-    return NextResponse.json({ count: 0, liked: false })
+    return NextResponse.json({ error: "数据库查询失败" }, { status: 500 })
   }
 }
 

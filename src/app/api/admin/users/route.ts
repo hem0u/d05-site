@@ -21,8 +21,9 @@ export async function GET() {
         createdAt: r.createdAt.toISOString(),
       })),
     })
-  } catch {
-    return NextResponse.json({ users: [] })
+  } catch (e) {
+    console.error("[api/admin/users] GET failed:", e)
+    return NextResponse.json({ error: "数据库查询失败" }, { status: 500 })
   }
 }
 
