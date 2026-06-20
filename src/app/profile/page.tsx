@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { Pencil, LogOut, Heart, Lock } from "lucide-react"
+import { Pencil, LogOut, Heart, Lock, Eye, EyeOff } from "lucide-react"
 import { HexGrid, Sparkles, ArkDiamond } from "@/components/decorations"
 
 type User = {
@@ -37,6 +37,7 @@ export default function ProfilePage() {
   const [pwEditing, setPwEditing] = useState(false)
   const [pwCode, setPwCode] = useState("")
   const [pwNew, setPwNew] = useState("")
+  const [showPwNew, setShowPwNew] = useState(false)
   const [pwSending, setPwSending] = useState(false)
   const [pwSaving, setPwSaving] = useState(false)
   const [pwMsg, setPwMsg] = useState("")
@@ -169,13 +170,23 @@ export default function ProfilePage() {
               <p className="text-[11px] text-muted-foreground/50">验证码将发送至 {user.email}</p>
               <div>
                 <label className="text-xs text-muted-foreground mb-1 block">新密码</label>
-                <input
-                  type="password"
-                  value={pwNew}
-                  onChange={(e) => setPwNew(e.target.value)}
-                  placeholder="至少6位"
-                  className="w-full px-3 py-2 text-sm bg-muted/30 border border-border/20 rounded-lg outline-none focus:border-[hsl(var(--ark-amber)/0.3)]"
-                />
+                <div className="relative">
+                  <input
+                    type={showPwNew ? "text" : "password"}
+                    value={pwNew}
+                    onChange={(e) => setPwNew(e.target.value)}
+                    placeholder="至少6位"
+                    className="w-full px-3 py-2 pr-9 text-sm bg-muted/30 border border-border/20 rounded-lg outline-none focus:border-[hsl(var(--ark-amber)/0.3)]"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPwNew(!showPwNew)}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-muted-foreground/30 hover:text-muted-foreground/60 transition-colors"
+                    tabIndex={-1}
+                  >
+                    {showPwNew ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+                  </button>
+                </div>
               </div>
               <div>
                 <label className="text-xs text-muted-foreground mb-1 block">验证码</label>

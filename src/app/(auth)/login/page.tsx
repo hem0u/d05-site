@@ -3,6 +3,7 @@
 import { useState, Suspense } from "react"
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
+import { Eye, EyeOff } from "lucide-react"
 
 function LoginForm() {
   const searchParams = useSearchParams()
@@ -10,12 +11,14 @@ function LoginForm() {
   const [mode, setMode] = useState<"login" | "reset">("login")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [showPw, setShowPw] = useState(false)
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
 
   // Reset password state
   const [resetCode, setResetCode] = useState("")
   const [resetPassword, setResetPassword] = useState("")
+  const [showResetPw, setShowResetPw] = useState(false)
   const [resetSending, setResetSending] = useState(false)
   const [resetMsg, setResetMsg] = useState("")
 
@@ -109,13 +112,23 @@ function LoginForm() {
           </div>
           <div>
             <label className="text-xs text-muted-foreground mb-1 block">密码</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="至少6位"
-              className="w-full px-3 py-2 text-sm bg-muted/30 border border-border/20 rounded-lg outline-none focus:border-[hsl(var(--ark-amber)/0.3)] transition-colors"
-            />
+            <div className="relative">
+              <input
+                type={showPw ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="至少6位"
+                className="w-full px-3 py-2 pr-9 text-sm bg-muted/30 border border-border/20 rounded-lg outline-none focus:border-[hsl(var(--ark-amber)/0.3)] transition-colors"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPw(!showPw)}
+                className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-muted-foreground/30 hover:text-muted-foreground/60 transition-colors"
+                tabIndex={-1}
+              >
+                {showPw ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+              </button>
+            </div>
           </div>
 
           {error && <p className="text-xs text-red-400">{error}</p>}
@@ -161,13 +174,23 @@ function LoginForm() {
           </div>
           <div>
             <label className="text-xs text-muted-foreground mb-1 block">新密码</label>
-            <input
-              type="password"
-              value={resetPassword}
-              onChange={(e) => setResetPassword(e.target.value)}
-              placeholder="至少6位"
-              className="w-full px-3 py-2 text-sm bg-muted/30 border border-border/20 rounded-lg outline-none focus:border-[hsl(var(--ark-amber)/0.3)] transition-colors"
-            />
+            <div className="relative">
+              <input
+                type={showResetPw ? "text" : "password"}
+                value={resetPassword}
+                onChange={(e) => setResetPassword(e.target.value)}
+                placeholder="至少6位"
+                className="w-full px-3 py-2 pr-9 text-sm bg-muted/30 border border-border/20 rounded-lg outline-none focus:border-[hsl(var(--ark-amber)/0.3)] transition-colors"
+              />
+              <button
+                type="button"
+                onClick={() => setShowResetPw(!showResetPw)}
+                className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-muted-foreground/30 hover:text-muted-foreground/60 transition-colors"
+                tabIndex={-1}
+              >
+                {showResetPw ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+              </button>
+            </div>
           </div>
 
           {resetMsg && (

@@ -45,6 +45,7 @@ export function CalendarSchedule() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
   const [hovered, setHovered] = useState<string | null>(null)
+  const [selectedDay, setSelectedDay] = useState<string | null>(null)
 
   const fetchPlans = useCallback(async () => {
     setLoading(true)
@@ -126,8 +127,9 @@ export function CalendarSchedule() {
             <div
               onMouseEnter={() => canHover && setHovered(key)}
               onMouseLeave={() => setHovered(null)}
-              className={`aspect-square border-r border-b border-border/10 flex items-center justify-center transition-all relative
-                ${past && !hasPlan ? "bg-muted/10 text-muted-foreground/20" : hasPlan ? "hover:bg-muted/20" : ""}
+              onClick={() => hasPlan && setSelectedDay(selectedDay === key ? null : key)}
+              className={`aspect-square border-r border-b border-border/10 flex items-center justify-center transition-all relative cursor-default
+                ${past && !hasPlan ? "bg-muted/10 text-muted-foreground/20" : hasPlan ? `hover:bg-muted/20 cursor-pointer ${selectedDay === key ? "bg-[hsl(var(--ark-amber)/0.08)] ring-1 ring-[hsl(var(--ark-amber)/0.3)]" : ""}` : ""}
               `}
             >
               {day && (
@@ -143,9 +145,9 @@ export function CalendarSchedule() {
               {/* Hover tooltip */}
               {hovered === key && hasPlan && (
                 <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 z-30 pointer-events-none">
-                  <div className="bg-card border border-border/30 rounded-lg shadow-xl shadow-black/20 p-2.5 w-44 text-left">
-                    <p className="text-[10px] text-muted-foreground/40 mb-0.5">{key}</p>
-                    <p className="text-xs text-foreground/80 leading-relaxed whitespace-pre-wrap line-clamp-4">{plans.get(key)}</p>
+                  <div className="bg-card border border-border/30 rounded-lg shadow-xl shadow-black/20 p-3 w-56 text-left">
+                    <p className="text-[10px] text-muted-foreground/40 mb-1">{key}</p>
+                    <p className="text-xs text-foreground/85 leading-relaxed whitespace-pre-wrap max-h-28 overflow-hidden">{plans.get(key)}</p>
                   </div>
                 </div>
               )}
@@ -154,6 +156,43 @@ export function CalendarSchedule() {
           return cell
         })}
       </div>
+
+      {/* ── 本月日程列表 ── */}
+      {(() => {
+        const monthPlans = Array.from(plans.entries())
+          .filter(([key]) => key.startsWith(dateKey(year, month, 1).slice(0, 7)))
+          .sort(([a], [b]) => a.localeCompare(b))
+        if (monthPlans.length === 0) return null
+        return (
+          <div className="mt-8 space-y-3">
+            <h3 className="text-xs tracking-widest text-muted-foreground/40">
+              本月日程 · {monthPlans.length} 项
+            </h3>
+            <div className="space-y-2">
+              {monthPlans.map(([key, content]) => (
+                <div
+                  key={key}
+                  onClick={() => setSelectedDay(selectedDay === key ? null : key)}
+                  className={`p-3 rounded-lg border transition-all cursor-pointer ${
+                    selectedDay === key
+                      ? "border-[hsl(var(--ark-amber)/0.3)] bg-[hsl(var(--ark-amber)/0.06)]"
+                      : "border-border/15 bg-card/30 hover:border-border/30"
+                  }`}
+                >
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-sm">{getEmoji(key)}</span>
+                    <span className="text-[10px] text-muted-foreground/50 tracking-wider">{key}</span>
+                    <span className="text-[10px] text-muted-foreground/30">
+                      {["日","一","二","三","四","五","六"][new Date(key).getDay()]}
+                    </span>
+                  </div>
+                  <p className="text-xs text-foreground/80 leading-relaxed whitespace-pre-wrap">{content}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )
+      })()}
       </>
       )}
     </div>
